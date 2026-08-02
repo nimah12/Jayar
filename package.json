@@ -1,0 +1,20 @@
+{
+  "name": "jayar",
+  "version": "1.0.0",
+  "description": "جایار — سامانه رزرو هتل و ویلا در سراسر ایران",
+  "main": "serve.js",
+  "scripts": {
+    "build:css": "npx tailwindcss -i css/tailwind-input.css -o css/tailwind.css",
+    "watch:css": "npx tailwindcss -i css/tailwind-input.css -o css/tailwind.css --watch",
+    "serve": "node serve.js",
+    "start": "node serve.js"
+  },
+  "keywords": [],
+  "author": "nimah12",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

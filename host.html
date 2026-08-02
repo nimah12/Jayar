@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>پنل میزبان | جایار</title>
+<meta name="description" content="میزبان شو؛ اقامتگاهت را ثبت کن و از هر رزرو درآمد داشته باش">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/tailwind.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="index.html" class="brand"><span class="brand-icon animate-float">🏡</span> جایار</a>
+    <div class="nav-links">
+      <a class="nav-link" href="index.html">جستجوی اقامتگاه</a>
+      <a class="nav-link host-cta active" href="host.html">پنل میزبان</a>
+      <button class="theme-toggle" title="حالت روشن/تاریک"></button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+    <div class="host-hero animate-rise">
+      <div>
+        <h1>میزبان شوید؛ اقامتگاهتان را ثبت کنید و از هر رزرو، درآمد داشته باشید.</h1>
+        <p>اگر خانه، ویلا، سوییت یا اقامتگاهایی دارید که میتوانید برای مدتی اجاره دهید، همین حالا در جایار ثبت کنید. قیمت پیشنهادی را خودتان تعیین میکنید و رزروها مستقیم به شما میرسد.</p>
+        <div class="pill-row">
+          <span class="pill">✓ ثبتنام رایگان</span>
+          <span class="pill">✓ قیمت پیشنهادی شما</span>
+          <span class="pill">✓ پشتیبانی مستقیم</span>
+        </div>
+      </div>
+      <div class="host-steps">
+        <div class="host-step animate-rise" style="animation-delay:.15s"><span class="n">۱</span><div><b>ثبتنام بهعنوان میزبان</b><p>نام و شماره تماس خود را وارد کنید.</p></div></div>
+        <div class="host-step animate-rise" style="animation-delay:.3s"><span class="n">۲</span><div><b>ثبت اقامتگاه</b><p>امکانات، عکسها و قیمت پیشنهادی را مشخص کنید.</p></div></div>
+        <div class="host-step animate-rise" style="animation-delay:.45s"><span class="n">۳</span><div><b>دریافت رزرو</b><p>به محض رزرو، اطلاعرسانی میشود.</p></div></div>
+      </div>
+    </div>
+
+    <div id="hostFormWrap"></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="register">ثبت اقامتگاه جدید</button>
+      <button class="tab-btn" data-tab="list">اقامتگاه‌های من</button>
+      <button class="tab-btn" data-tab="bookings">رزروهای دریافتی</button>
+    </div>
+
+    <div id="tabRegister"></div>
+    <div id="tabList" class="hidden"></div>
+    <div id="tabBookings" class="hidden"></div>
+  </div>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <h4>🏡 جایار</h4>
+        <p class="muted">سامانه میزبانان جایار — اقامتگاهتان را ثبت کنید و بگذارید جایار آن را در سراسر ایران معرفی کند.</p>
+      </div>
+      <div>
+        <h4>دسترسی سریع</h4>
+        <ul><li><a href="index.html">جستجوی اقامتگاه</a></li></ul>
+      </div>
+      <div>
+        <h4>پشتیبانی</h4>
+        <ul>
+          <li><a href="host.html">سوالات متداول</a></li>
+          <li><a href="https://github.com/nimah12" target="_blank" rel="noopener">🐙 گیت‌هاب</a></li>
+          <li><a href="mailto:bbmesiaaw@gmail.com">📧 bbmesiaaw@gmail.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">© ۱۴۰۴ جایار — تمامی حقوق محفوظ است.</div>
+  </div>
+</footer>
+
+<script src="js/common.js"></script>
+<script src="js/data.js"></script>
+<script src="js/store.js"></script>
+<script src="js/host.js"></script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+/* ==================== پنل میزبان — ثبت‌نام، ثبت اقامتگاه، مدیریت ==================== */
+const $ = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => Array.from(c.querySelectorAll(s));
+
+/* ---------- وضعیت ورود میزبان ---------- */
+let HOST = J.db.host;
+
+const el = {
+  register: $('#tabRegister'),
+  list: $('#tabList'),
+  bookings: $('#tabBookings'),
+  hostWrap: $('#hostFormWrap'),
+};
+
+$$('.tab-btn').forEach(btn => {
+  btn.onclick = () => {
+    $$('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    const tab = btn.dataset.tab;
+    el.register.classList.toggle('hidden', tab !== 'register');
+    el.list.classList.toggle('hidden', tab !== 'list');
+    el.bookings.classList.toggle('hidden', tab !== 'bookings');
+    if (tab === 'list') renderMyProps();
+    if (tab === 'bookings') renderBookings();
+  };
+});
+
+/* ---------- ثبت‌نام میزبان (اگر وارد نشده) ---------- */
+function renderHostForm() {
+  if (HOST) {
+    el.hostWrap.innerHTML = `
+      <div class="card animate-rise" style="margin-top:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+          <div>
+            <h3>👋 خوش آمدید، ${J.escape(HOST.name)}</h3>
+            <p class="muted" style="font-size:13.5px">شماره تماس: ${J.escape(HOST.phone)} · ${J.fmtNum(J.db.props.filter(p => p.ownerId === HOST.id).length)} اقامتگاه ثبت‌شده</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="logoutBtn">خروج از حساب</button>
+        </div>
+      </div>`;
+    $('#logoutBtn').onclick = () => {
+      J.db.host = null;
+      J.toast('از حساب میزبان خارج شدید');
+      setTimeout(() => location.reload(), 700);
+    };
+    return;
+  }
+
+  el.hostWrap.innerHTML = `
+    <div class="card animate-rise" style="margin-top:20px">
+      <h3>🚪 ورود / ثبت‌نام میزبان</h3>
+      <p class="muted" style="font-size:13.5px;margin-bottom:16px">برای ثبت اقامتگاه جدید ابتدا نام و شماره تماس خود را ثبت کنید.</p>
+      <form class="form" id="hostJoinForm">
+        <div class="form-grid">
+          <div class="field"><label>نام و نام خانوادگی</label><input id="hName" placeholder="مثلاً رضا کریمی" required></div>
+          <div class="field"><label>شماره تماس</label><input id="hPhone" type="tel" placeholder="۰۹۱۲۳۴۵۶۷۸۹" required></div>
+        </div>
+        <button class="btn btn-primary" type="submit" style="align-self:flex-start">ورود به پنل میزبان</button>
+      </form>
+    </div>`;
+
+  $('#hostJoinForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const name = $('#hName').value.trim();
+    const phone = $('#hPhone').value.replace(/[\s-]/g, '');
+    if (name.length < 3) return J.toast('نام و نام خانوادگی را کامل وارد کنید', 'error');
+    if (!/^0\d{10}$/.test(phone)) return J.toast('شماره تماس معتبر نیست', 'error');
+    let acc = J.db.hosts.find(h => h.phone === phone);
+    if (!acc) {
+      acc = { id: 'h' + Date.now().toString(36), name, phone, since: new Date().toISOString() };
+      J.db.hosts = [...J.db.hosts, acc];
+      J.toast('به‌عنوان میزبان ثبت‌نام شدید 🎉');
+    } else {
+      J.toast('خوش آمدید!');
+    }
+    J.db.host = acc;
+    setTimeout(() => location.reload(), 700);
+  });
+}
+
+/* ---------- فرم ثبت اقامتگاه ---------- */
+function renderRegisterForm() {
+  el.register.innerHTML = `
+    <div class="card animate-rise">
+      <h3>🏡 ثبت اقامتگاه جدید</h3>
+      <p class="muted" style="font-size:13px;margin-bottom:16px">قیمت پیشنهادی خود را تعیین کنید؛ جایار پس از بررسی، اقامتگاه را در جستجو نمایش می‌دهد.</p>
+      <form class="form" id="propForm">
+        <div class="form-grid">
+          <div class="field"><label>نام اقامتگاه *</label><input id="pTitle" placeholder="مثلاً ویلای ییلاقی دربند" required></div>
+          <div class="field"><label>نوع اقامتگاه *</label>
+            <select id="pType">
+              ${Object.entries(J.TYPES).map(([k, v]) => `<option value="${k}">${v.icon} ${v.label}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field"><label>شهر *</label>
+            <select id="pCity">
+              ${['', ...J.CITIES].map(c => `<option value="${c}">${c || 'انتخاب شهر…'}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field"><label>محله</label><input id="pRegion" placeholder="مثلاً نیاوران"></div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field"><label>قیمت شب (تومان) *</label><input id="pPrice" type="number" min="100000" step="50000" placeholder="۲۰۰۰۰۰۰" required></div>
+          <div class="field"><label>ظرفیت مهمان *</label><input id="pGuests" type="number" min="1" max="30" value="4" required></div>
+          <div class="field"><label>تعداد اتاق</label><input id="pBedrooms" type="number" min="1" max="30" value="2"></div>
+          <div class="field"><label>متراژ</label><input id="pArea" type="number" min="10" placeholder="۱۰۰"></div>
+        </div>
+
+        <div class="field">
+          <label>امکانات (انتخابی)</label>
+          <div class="checkbox-grid" id="pFeats">
+            ${Object.entries(J.FEATURES).map(([k, v]) => `<label><input type="checkbox" value="${k}"> ${J.feat(k)}</label>`).join('')}
+          </div>
+        </div>
+
+        <div class="field">
+          <label>توضیحات برای مهمانان</label>
+          <textarea id="pDesc" placeholder="چند خط درباره اقامتگاه، موقعیت و امکانات بنویسید…"></textarea>
+        </div>
+
+        <button class="btn btn-primary" type="submit">ثبت اقامتگاه در جایار</button>
+      </form>
+    </div>`;
+
+  $('#propForm').addEventListener('submit', e => {
+    e.preventDefault();
+    if (!HOST) {
+      J.toast('ابتدا به‌عنوان میزبان وارد شوید', 'error');
+      switchTab('register');
+      return;
+    }
+    const title = $('#pTitle').value.trim();
+    const type = $('#pType').value;
+    const city = $('#pCity').value;
+    const price = +$('#pPrice').value || 0;
+    const guests = +$('#pGuests').value || 1;
+    const feats = $$('#pFeats input:checked').map(i => i.value);
+
+    if (title.length < 3) return J.toast('نام اقامتگاه را کامل وارد کنید', 'error');
+    if (!city) return J.toast('شهر را انتخاب کنید', 'error');
+    if (price < 100000) return J.toast('قیمت شب باید حداقل ۱۰۰ هزار تومان باشد', 'error');
+    if (feats.length === 0) return J.toast('حداقل یک امکانات را انتخاب کنید', 'error');
+
+    const n = {
+      id: J.uidProp(),
+      title, type, city,
+      region: $('#pRegion').value.trim(),
+      price, guests,
+      bedrooms: +$('#pBedrooms').value || 1,
+      area: +$('#pArea').value || null,
+      features: feats,
+      desc: $('#pDesc').value.trim() || 'اقامتگاه خصوصی برای اجاره.',
+      rating: 4.5,
+      reviews: 0,
+      ownerId: HOST.id,
+      createdAt: new Date().toISOString(),
+    };
+
+    J.db.props = [...J.db.props, n];
+    J.toast('اقامتگاه با موفقیت ثبت شد ✅');
+    renderMyProps();
+    switchTab('list');
+  });
+}
+
+/* ---------- فهرست اقامتگاه‌های من ---------- */
+function renderMyProps() {
+  const mine = J.db.props.filter(p => p.ownerId === HOST.id);
+  if (!mine.length) {
+    el.list.innerHTML = `<div class="empty-state"><div class="emoji">🏚️</div><h3>هنوز اقامتگاهی ثبت نکرده‌اید</h3><p class="muted">از تب «ثبت اقامتگاه» اولین اقامتگاه خود را اضافه کنید.</p></div>`;
+    return;
+  }
+  el.list.innerHTML = `<div class="host-list">${mine.map((p, i) => `
+    <div class="host-item animate-fade-up delay-${Math.min(((i % 9) + 1), 9)}">
+      <img src="${J.img(p.id, 300, 200)}" alt="" class="transition-opacity duration-300 opacity-90 group-hover:opacity-100">
+      <div class="host-item-body">
+        <div class="host-item-title">${J.escape(p.title)}</div>
+        <div class="muted" style="font-size:13px">📍 ${J.escape(p.city)} · ${J.fmtNum(p.price)} تومان/شب · ★ ${J.fmtNum(p.rating)}</div>
+        <div class="muted" style="font-size:12.5px">${J.escape(p.desc)}</div>
+        <div style="margin-top:6px"><span class="pill">👥 ${J.fmtNum(p.guests)} مهمان</span><span class="pill">🛏 ${J.fmtNum(p.bedrooms)} اتاق</span></div>
+      </div>
+      <div class="host-item-actions">
+        <button class="btn btn-danger-soft btn-sm" data-del="${p.id}">حذف</button>
+      </div>
+    </div>`).join('')}</div>`;
+
+  $$('[data-del]').forEach(b => b.onclick = async () => {
+    if (await J.confirm('حذف اقامتگاه', 'این اقامتگاه برای همیشه حذف میشود.', '🗑️', 'حذف')) {
+      J.db.props = J.db.props.filter(x => x.id !== b.dataset.del);
+      J.toast('اقامتگاه حذف شد', 'error');
+      renderMyProps();
+    }
+  });
+}
+
+/* ---------- رزروهای دریافتی ---------- */
+function renderBookings() {
+  const mine = J.db.props.filter(p => p.ownerId === HOST.id);
+  const ids = new Set(mine.map(p => p.id));
+  const list = J.db.bookings.filter(b => ids.has(b.propertyId));
+
+  if (!list.length) {
+    el.bookings.innerHTML = `<div class="empty-state"><div class="emoji">📭</div><h3>هنوز رزروی دریافت نکرده‌اید</h3><p class="muted">به محض رزرو اقامتگاه‌تان توسط مهمان، اینجا نمایش داده می‌شود.</p></div>`;
+    return;
+  }
+
+  el.bookings.innerHTML = list.map(b => `
+    <div class="booking-row">
+      <div style="flex:1;min-width:220px">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <b>${J.escape(b.propertyTitle)}</b>
+          <span class="status ${b.status === 'ok' ? 'status-ok' : 'status-cancel'}">${b.status === 'ok' ? 'تأیید شده' : 'در انتظار'}</span>
+        </div>
+        <div class="muted" style="font-size:13px;margin-top:4px">
+          👤 ${J.escape(b.name)} · 📞 ${J.escape(b.phone)}
+        </div>
+        <div class="muted" style="font-size:12.5px;margin-top:2px">
+          📅 ${J.fmtDate(b.checkin)} ← ${J.fmtDate(b.checkout)} · ${J.fmtNum(b.nights)} شب · ${J.fmtNum(b.guests)} مهمان
+        </div>
+        <div class="muted" style="font-size:12.5px">کد رزرو: ${J.escape(b.id)}</div>
+      </div>
+      <div style="text-align:left">
+        <div style="font-size:18px;font-weight:800;color:var(--brand-dark)">${J.fmtPrice(b.total)}</div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn btn-soft btn-sm" data-ok="${b.id}">تأیید</button>
+          <button class="btn btn-danger-soft btn-sm" data-rej="${b.id}">رد</button>
+        </div>
+      </div>
+    </div>`).join('');
+
+  $$('[data-ok]').forEach(b => b.onclick = () => {
+    J.updateBookingStatus(b.dataset.ok, 'ok');
+    J.toast('رزرو تأیید شد ✅');
+    renderBookings();
+  });
+  $$('[data-rej]').forEach(b => b.onclick = () => {
+    J.updateBookingStatus(b.dataset.rej, 'cancelled');
+    J.toast('رزرو رد شد');
+    renderBookings();
+  });
+}
+
+/* ---------- تعویض تب / کمکی ---------- */
+function switchTab(name) {
+  const btn = $(`.tab-btn[data-tab="${name}"]`);
+  if (btn) btn.click();
+}
+
+/* مقداردهی نهایی */
+J.onReady(() => {
+  renderHostForm();
+  renderRegisterForm();
+  renderMyProps();
+});

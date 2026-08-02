@@ -1,0 +1,92 @@
+/* جایار — Tailwind v4 input */
+@import "tailwindcss";
+@source "../index.html";
+@source "../detail.html";
+@source "../host.html";
+@source "../js/**/*.js";
+
+/* ---------- انیمیشن‌های سفارشی ---------- */
+
+/* ورود نرم کارت‌ها با تاخیر پلکانی */
+@keyframes jy-fade-up-key {
+  from { opacity: 0; transform: translateY(24px) scale(.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   }
+}
+.animate-fade-up {
+  animation: jy-fade-up-key .55s cubic-bezier(.22, 1, .36, 1) both;
+}
+.delay-1  { animation-delay: .05s; }
+.delay-2  { animation-delay: .10s; }
+.delay-3  { animation-delay: .15s; }
+.delay-4  { animation-delay: .20s; }
+.delay-5  { animation-delay: .25s; }
+.delay-6  { animation-delay: .30s; }
+.delay-7  { animation-delay: .35s; }
+.delay-8  { animation-delay: .40s; }
+.delay-9  { animation-delay: .45s; }
+.delay-10 { animation-delay: .50s; }
+
+/* ضربان قلب (دکمه علاقه‌مندی) */
+@keyframes jy-heart-pop {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.45); }
+  55%  { transform: scale(.85); }
+  75%  { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.animate-heart-pop { animation: jy-heart-pop .5s ease; }
+
+/* شناور (کارت‌ها در صفحه میزبان / hero) */
+@keyframes jy-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+.animate-float { animation: jy-float 4s ease-in-out infinite; }
+
+/* گرادیان متحرک برای هدر */
+@keyframes jy-gradient-x {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: jy-gradient-x 8s ease infinite;
+}
+
+/* درخشش/پالس برای دکمه‌ها */
+@keyframes jy-glow {
+  0%, 100% { box-shadow: 0 6px 18px rgba(15, 158, 114, .35); }
+  50%      { box-shadow: 0 6px 30px rgba(15, 158, 114, .65); }
+}
+.animate-glow { animation: jy-glow 2.5s ease-in-out infinite; }
+
+/* تیله‌ای که می‌چرخد (بوک‌مارک/نشان) */
+@keyframes jy-spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.animate-spin-slow { animation: jy-spin-slow 9s linear infinite; }
+
+/* لرزش ملایم برای هوور روی کارت */
+@keyframes jy-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25%      { transform: rotate(-1.5deg); }
+  75%      { transform: rotate(1.5deg); }
+}
+.group:hover .animate-wiggle-on-hover { animation: jy-wiggle .4s ease; }
+
+/* آمدن از پایین برای hero و پیل‌ها */
+@keyframes jy-rise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-rise { animation: jy-rise .6s ease both; }
+
+/* تایپ‌گرافیک برای هزینه در صفحه جزئیات */
+@keyframes jy-count-pop {
+  0% { transform: scale(.9); opacity: .6; }
+  60% { transform: scale(1.04); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.animate-count-pop { animation: jy-count-pop .35s ease; }
