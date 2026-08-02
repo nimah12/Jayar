@@ -20,7 +20,7 @@ J.fmtDate = iso => {
 J.TYPES = {
   hotel: { label: 'هتل', icon: '🏨' },
   villa: { label: 'ویلا', icon: '🏡' },
-  suite: { label: 'سوییت', icon: '✨' },
+  suite: { label: 'سوئیت', icon: '✨' },
   apartment: { label: 'اقامتگاه', icon: '🏢' },
 };
 
