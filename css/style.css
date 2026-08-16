@@ -84,6 +84,24 @@ input, select, textarea { font-family: inherit; }
   background: var(--surface); font-size: 18px; display: grid; place-items: center;
 }
 
+/* دکمهٔ همبرگری — فقط در موبایل نمایش داده می‌شود */
+.nav-burger {
+  display: none;
+  flex-direction: column; justify-content: center; gap: 5px;
+  width: 42px; height: 42px; flex: none;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--surface); padding: 0 11px;
+  transition: border-color .2s;
+}
+.nav-burger:hover { border-color: var(--brand); }
+.nav-burger span {
+  height: 2.5px; border-radius: 3px; background: var(--text);
+  transition: transform .25s ease, opacity .2s ease;
+}
+.nav-burger.open span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+.nav-burger.open span:nth-child(2) { opacity: 0; }
+.nav-burger.open span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
+
 /* ---------- Buttons ---------- */
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -301,20 +319,113 @@ input, select, textarea { font-family: inherit; }
 .booking-row + .booking-row { margin-top: 12px; }
 .status { border-radius: 999px; padding: 4px 12px; font-size: 12px; font-weight: 700; }
 .status-ok { background: var(--brand-soft); color: var(--brand-dark); }
+.status-pending { background: rgba(255, 138, 45, .15); color: var(--accent); }
 .status-cancel { background: rgba(229,72,77,.12); color: var(--danger); }
 
 .checkbox-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
 .checkbox-grid label { display: flex; gap: 8px; align-items: center; font-size: 13.5px; border: 1px solid var(--border); padding: 9px 12px; border-radius: 12px; cursor: pointer; }
 .checkbox-grid input { accent-color: var(--brand); width: 16px; height: 16px; }
 
+/* ---------- صفحات اطلاعاتی: تماس با ما / سوالات متداول / قوانین ---------- */
+.contact-row {
+  display: flex; gap: 14px; align-items: center; padding: 14px 16px;
+  border: 1px solid var(--border); border-radius: 14px; transition: border-color .2s, background .2s;
+}
+.contact-row:hover { border-color: var(--brand); background: var(--brand-soft); }
+.contact-ico {
+  width: 44px; height: 44px; flex: none; border-radius: 12px; background: var(--brand-soft);
+  display: grid; place-items: center; font-size: 22px;
+}
+.contact-row p { font-size: 13px; margin-top: 2px; }
+
+/* ---------- تیم جایار (درباره ما) ---------- */
+.team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.team-card {
+  text-align: center; padding: 22px 16px;
+  border: 1px solid var(--border); border-radius: 16px;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
+}
+.team-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); border-color: var(--brand); }
+.team-avatar {
+  width: 64px; height: 64px; margin: 0 auto 12px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  display: grid; place-items: center; font-size: 30px;
+  box-shadow: 0 6px 16px rgba(15, 158, 114, .3);
+}
+.team-card b { display: block; font-size: 15px; }
+.team-role {
+  display: inline-block; margin-top: 6px; background: var(--brand-soft); color: var(--brand-dark);
+  border-radius: 999px; padding: 3px 12px; font-size: 12px; font-weight: 700;
+}
+.team-card p { font-size: 12.5px; color: var(--muted); margin-top: 8px; line-height: 1.8; }
+.team-link { display: inline-block; margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+.team-link:hover { color: var(--brand-dark); }
+
+/* جستجو در سوالات متداول */
+.faq-search-input {
+  display: flex; align-items: center; gap: 10px;
+  border: 1.5px solid var(--border); border-radius: 12px;
+  background: var(--bg); padding-inline: 14px;
+  transition: border-color .2s;
+}
+.faq-search-input:focus-within { border-color: var(--brand); }
+.faq-search-input span { font-size: 16px; }
+.faq-search-input input {
+  flex: 1; min-width: 0; border: none; background: none; outline: none;
+  padding: 13px 0; font-size: 14px; color: var(--text);
+}
+.faq-search-input input::placeholder { color: var(--muted); }
+.faq-empty { text-align: center; padding: 36px 20px; color: var(--muted); }
+.faq-empty .emoji { font-size: 40px; margin-bottom: 8px; }
+
+.faq details {
+  border: 1px solid var(--border); border-radius: 14px; background: var(--surface); overflow: hidden;
+}
+.faq details + details { margin-top: 10px; }
+.faq summary {
+  padding: 14px 18px; font-weight: 800; font-size: 14.5px; cursor: pointer; list-style: none;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '＋'; color: var(--brand); font-size: 18px; transition: transform .2s; }
+.faq details[open] summary::after { transform: rotate(45deg); }
+.faq details[open] summary { border-bottom: 1px solid var(--border); }
+.faq-answer { padding: 14px 18px 16px; color: var(--muted); font-size: 14px; line-height: 1.9; }
+
+.rules-list { padding-inline-start: 22px; display: flex; flex-direction: column; gap: 12px; font-size: 14px; line-height: 1.9; }
+.rules-list li::marker { color: var(--brand); }
+
 /* ---------- Footer ---------- */
 .footer { margin-top: 60px; border-top: 1px solid var(--border); background: var(--surface); }
-.footer-inner { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 26px; padding: 34px 0; }
+.footer-inner { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr; gap: 26px; padding: 34px 0; }
 .footer h4 { font-size: 15px; margin-bottom: 10px; }
 .footer ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
 .footer a, .footer .muted { font-size: 13.5px; color: var(--muted); }
 .footer a:hover { color: var(--brand-dark); }
-.footer-bottom { border-top: 1px solid var(--border); padding: 16px 0; font-size: 13px; color: var(--muted); text-align: center; }
+
+/* دکمه‌های شبکه‌های اجتماعی فوتر */
+.social-links { display: flex; gap: 8px; }
+.social-btn {
+  width: 38px; height: 38px; border-radius: 12px;
+  border: 1px solid var(--border); background: var(--surface);
+  display: grid; place-items: center; font-size: 17px;
+  transition: transform .15s, border-color .2s, background .2s;
+}
+.social-btn:hover { transform: translateY(-3px); border-color: var(--brand); background: var(--brand-soft); }
+.footer-bottom { border-top: 1px solid var(--border); padding: 16px 0; font-size: 13px; color: var(--muted); text-align: center; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+/* ---------- نشانگر وضعیت اتصال ---------- */
+.conn-status {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  padding: 5px 12px; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--surface); cursor: pointer; user-select: none;
+  transition: border-color .2s;
+}
+.conn-status:hover { border-color: var(--brand); }
+.conn-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.conn-dot.on { background: var(--brand); box-shadow: 0 0 6px rgba(15, 158, 114, .6); }
+.conn-dot.off { background: var(--accent); box-shadow: 0 0 6px rgba(255, 138, 45, .5); }
 
 /* ---------- Toast / Modal ---------- */
 .toast-wrap { position: fixed; bottom: 24px; right: 50%; transform: translateX(50%); z-index: 90; display: flex; flex-direction: column; gap: 10px; }
@@ -354,7 +465,19 @@ input, select, textarea { font-family: inherit; }
   .footer-inner { grid-template-columns: 1fr; }
 }
 @media (max-width: 620px) {
-  .nav-links .nav-link:not(.host-cta) { display: none; }
+  /* منوی موبایل: همبرگری + پنل کشویی لینک‌ها */
+  .nav-burger { display: flex; }
+  .nav-links {
+    position: absolute; top: 68px; right: 0; left: 0;
+    flex-direction: column; align-items: stretch; gap: 4px;
+    display: none; padding: 10px 20px 14px;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .nav-links.open { display: flex; }
+  .nav-links .nav-link { padding: 13px 14px; border-radius: 12px; }
+  .nav-links .theme-toggle { align-self: flex-end; }
+
   .grid { grid-template-columns: 1fr; }
   .form-grid { grid-template-columns: 1fr; }
   .gallery { grid-template-columns: 1fr; }

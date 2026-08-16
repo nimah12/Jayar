@@ -42,43 +42,11 @@ function filtered() {
   return sorted;
 }
 
-function cardHTML(p, idx) {
-  const t = J.TYPES[p.type];
-  const isFav = J.db.favs.includes(p.id);
-  const feats = (p.features || []).slice(0, 3).map(f => J.feat(f)).join(' · ');
-  const delay = Math.min(((idx % 9) + 1), 9);
-  return `
-  <article class="property group animate-fade-up delay-${delay} transition-all duration-300 hover:-translate-y-2 hover:shadow-sm">
-    <div class="property-img">
-      <a class="img-link" href="detail.html?id=${p.id}">
-        <img src="${J.img(p.id, 900, 600)}" alt="${J.escape(p.title)}" loading="lazy" class="transition-transform duration-500 group-hover:scale-105">
-      </a>
-      <span class="rating-badge">★ ${J.fmtNum(p.rating)}</span>
-      <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${p.id}" title="علاقه‌مندی">${isFav ? '❤️' : '🤍'}</button>
-      <span class="type-badge">${t.icon} ${t.label}</span>
-    </div>
-    <div class="property-body">
-      <div>
-        <a class="property-title transition-colors duration-200 group-hover:text-emerald-700" href="detail.html?id=${p.id}">${J.escape(p.title)}</a>
-        <div class="property-loc">📍 ${J.escape(p.city)}${p.region ? '، ' + J.escape(p.region) : ''}</div>
-      </div>
-      <div class="property-feats">${feats}</div>
-      <div class="property-foot">
-        <div class="price">
-          <span class="price-amount">${J.fmtNum(p.price)}</span>
-          <span class="price-unit">تومان / شب</span>
-        </div>
-        <a class="btn btn-primary btn-sm" href="detail.html?id=${p.id}">رزرو</a>
-      </div>
-    </div>
-  </article>`;
-}
-
 function render() {
   const list = filtered();
   el.count.innerHTML = `${J.fmtNum(list.length)} اقامتگاه پیدا شد`;
   el.grid.innerHTML = list.length
-    ? list.map(cardHTML).join('')
+    ? list.map((p, i) => J.cardHTML(p, i)).join('')
     : `<div class="empty-state animate-rise">
         <div class="emoji">🔍</div>
         <h3>اقامتگاهی پیدا نشد</h3>

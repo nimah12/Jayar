@@ -73,4 +73,11 @@ J.BASE_PROPERTIES = [
   },
 ];
 
-J.CITIES = [...new Set(J.BASE_PROPERTIES.map(p => p.city))];
+/* شهرهای مقصد: نمونه + اقامتگاه‌های ثبت‌شدهٔ میزبان‌ها (داینامیک — شهرهای جدید هم ظاهر می‌شوند) */
+Object.defineProperty(J, 'CITIES', {
+  get() {
+    const cities = [...J.BASE_PROPERTIES, ...(J.db ? J.db.props : [])]
+      .map(p => p.city).filter(Boolean);
+    return [...new Set(cities)];
+  },
+});

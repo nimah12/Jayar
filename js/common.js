@@ -41,6 +41,56 @@ J.FICON = {
 };
 J.feat = k => `${J.FICON[k] || '✦'} ${J.FEATURES[k] || k}`;
 
+/* کارت اقامتگاه — مشترک بین صفحهٔ اصلی و علاقه‌مندی‌ها */
+J.cardHTML = (p, idx = 0) => {
+  const t = J.TYPES[p.type];
+  const isFav = J.db.favs.includes(p.id);
+  const feats = (p.features || []).slice(0, 3).map(f => J.feat(f)).join(' · ');
+  const delay = Math.min(((idx % 9) + 1), 9);
+  return `
+  <article class="property group animate-fade-up delay-${delay} transition-all duration-300 hover:-translate-y-2 hover:shadow-sm">
+    <div class="property-img">
+      <a class="img-link" href="detail.html?id=${p.id}">
+        <img src="${J.img(p.id, 900, 600)}" alt="${J.escape(p.title)}" loading="lazy" class="transition-transform duration-500 group-hover:scale-105">
+      </a>
+      <span class="rating-badge">★ ${J.fmtNum(p.rating)}</span>
+      <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${p.id}" title="علاقه‌مندی">${isFav ? '❤️' : '🤍'}</button>
+      <span class="type-badge">${t.icon} ${t.label}</span>
+    </div>
+    <div class="property-body">
+      <div>
+        <a class="property-title transition-colors duration-200 group-hover:text-emerald-700" href="detail.html?id=${p.id}">${J.escape(p.title)}</a>
+        <div class="property-loc">📍 ${J.escape(p.city)}${p.region ? '، ' + J.escape(p.region) : ''}</div>
+      </div>
+      <div class="property-feats">${feats}</div>
+      <div class="property-foot">
+        <div class="price">
+          <span class="price-amount">${J.fmtNum(p.price)}</span>
+          <span class="price-unit">تومان / شب</span>
+        </div>
+        <a class="btn btn-primary btn-sm" href="detail.html?id=${p.id}">رزرو</a>
+      </div>
+    </div>
+  </article>`;
+};
+
+/* آمار زندهٔ «جایار در یک نگاه» — مشترک بین صفحات معرفی (about / about-us) */
+J.renderStats = (sel = '#stats') => {
+  const el = J.$(sel);
+  if (!el) return;
+  const stats = [
+    ['🏡', J.BASE_PROPERTIES.length, 'اقامتگاه نمونه'],
+    ['🗺️', J.CITIES.length, 'شهر مقصد'],
+    ['✨', Object.keys(J.TYPES).length, 'نوع اقامتگاه'],
+  ];
+  el.innerHTML = stats.map(([icon, n, label]) => `
+    <div class="card" style="text-align:center;padding:20px">
+      <div style="font-size:30px">${icon}</div>
+      <div style="font-size:26px;font-weight:900;color:var(--brand-dark);margin-top:6px">${J.fmtNum(n)}</div>
+      <div class="muted" style="font-size:13px">${label}</div>
+    </div>`).join('');
+};
+
 J.toISO = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 J.todayISO = () => J.toISO(new Date());
 
@@ -100,6 +150,50 @@ J.initTheme = () => {
   };
 };
 
-J.onReady = fn => { if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); };
+/* اجرا پس از آماده‌شدن DOM و لایهٔ داده (J.db.ready) */
+J.onReady = fn => {
+  const run = () => Promise.resolve(J.db && J.db.ready).then(() => fn());
+  if (document.readyState !== 'loading') run();
+  else document.addEventListener('DOMContentLoaded', run);
+};
+
+/* ---------- نشانگر وضعیت اتصال (فوتر همهٔ صفحات) ---------- */
+J.statusCbs = [];
+J.onStatusChange = cb => J.statusCbs.push(cb);
+J.emitStatus = v => J.statusCbs.forEach(cb => { try { cb(v); } catch {} });
+
+J.onStatusChange(connected => {
+  const el = J.$('#connStatus');
+  if (!el) return;
+  el.classList.toggle('on', !!connected);
+  el.classList.toggle('off', !connected);
+  el.innerHTML = connected
+    ? '<span class="conn-dot on"></span> متصل به سرور — داده‌ها بین دستگاه‌ها مشترک'
+    : '<span class="conn-dot off"></span> آفلاین — داده‌ها فقط در این دستگاه';
+});
+
+document.addEventListener('click', e => {
+  const el = e.target.closest && e.target.closest('#connStatus');
+  if (el && J.checkConnection) J.checkConnection();
+});
 
 J.onReady(J.initTheme);
+
+/* ---------- منوی موبایل (همبرگری) ---------- */
+J.onReady(() => {
+  const burger = J.$('.nav-burger');
+  const links = J.$('.nav-links');
+  if (!burger || !links) return;
+  const set = isOpen => {
+    links.classList.toggle('open', isOpen);
+    burger.classList.toggle('open', isOpen);
+    burger.setAttribute('aria-expanded', String(isOpen));
+    burger.setAttribute('aria-label', isOpen ? 'بستن منو' : 'باز کردن منو');
+  };
+  burger.onclick = () => set(!links.classList.contains('open'));
+  links.addEventListener('click', e => { if (e.target.closest && e.target.closest('a')) set(false); });
+  document.addEventListener('click', e => {
+    if (!(e.target.closest && e.target.closest('.nav-inner'))) set(false);
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
+});

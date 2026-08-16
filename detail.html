@@ -14,11 +14,16 @@
 <nav class="nav">
   <div class="container nav-inner">
     <a href="index.html" class="brand"><span class="brand-icon animate-float">🏡</span> جایار</a>
-    <div class="nav-links">
+    <div class="nav-links" id="navLinks">
       <a class="nav-link" href="index.html">جستجوی اقامتگاه</a>
+      <a class="nav-link" href="favorites.html">❤️ علاقه‌مندی‌ها</a>
+      <a class="nav-link" href="about-us.html">درباره ما</a>
       <a class="nav-link host-cta" href="host.html">میزبان شوید</a>
       <button class="theme-toggle" title="حالت روشن/تاریک"></button>
     </div>
+    <button class="nav-burger" aria-label="باز کردن منو" aria-expanded="false" aria-controls="navLinks">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
@@ -39,19 +44,40 @@
         <h4>دسترسی سریع</h4>
         <ul>
           <li><a href="index.html">جستجوی اقامتگاه</a></li>
+          <li><a href="favorites.html">علاقه‌مندی‌ها</a></li>
           <li><a href="host.html">ثبت اقامتگاه</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>جایار</h4>
+        <ul>
+          <li><a href="about-us.html">درباره ما</a></li>
+          <li><a href="about.html">تماس با ما</a></li>
+          <li><a href="faq.html">سوالات متداول</a></li>
+          <li><a href="rules.html">قوانین جایار</a></li>
         </ul>
       </div>
       <div>
         <h4>پشتیبانی</h4>
         <ul>
-          <li><a href="host.html">تماس با ما</a></li>
           <li><a href="https://github.com/nimah12" target="_blank" rel="noopener">🐙 گیت‌هاب</a></li>
           <li><a href="mailto:bbmesiaaw@gmail.com">📧 bbmesiaaw@gmail.com</a></li>
         </ul>
       </div>
+      <div>
+        <h4>دنبال کنید</h4>
+        <p class="muted" style="font-size:12.5px;margin-bottom:10px">جایار را در شبکه‌های اجتماعی دنبال کنید.</p>
+        <div class="social-links">
+          <a class="social-btn" href="https://instagram.com/jayar" target="_blank" rel="noopener" title="اینستاگرام">📸</a>
+          <a class="social-btn" href="https://t.me/jayar" target="_blank" rel="noopener" title="تلگرام">✈️</a>
+          <a class="social-btn" href="https://www.linkedin.com/company/jayar" target="_blank" rel="noopener" title="لینکدین">💼</a>
+        </div>
+      </div>
     </div>
-    <div class="footer-bottom">© ۱۴۰۴ جایار — تمامی حقوق محفوظ است.</div>
+    <div class="footer-bottom">
+      <span>© ۱۴۰۴ جایار — تمامی حقوق محفوظ است.</span>
+      <span id="connStatus" class="conn-status" title="برای بررسی مجدد اتصال کلیک کنید">⏳ در حال بررسی…</span>
+    </div>
   </div>
 </footer>
 

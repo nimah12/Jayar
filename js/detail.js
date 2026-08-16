@@ -42,6 +42,15 @@ function render(prop) {
   const in0 = (saved && saved.in) || J.toISO(new Date(Date.now() + 86400000));
   const out0 = (saved && saved.out) || J.toISO(new Date(Date.now() + 3 * 86400000));
 
+  /* فیلدهای اختیاری: فقط مقادیر موجود نمایش داده می‌شوند (بدون «،» و «۰» اضافی) */
+  const locParts = [prop.city, prop.region].filter(Boolean);
+  const pills = [
+    prop.guests ? `<span class="pill">👥 ${J.fmtNum(prop.guests)} مهمان</span>` : '',
+    prop.bedrooms ? `<span class="pill">🛏 ${J.fmtNum(prop.bedrooms)} اتاق</span>` : '',
+    prop.area ? `<span class="pill">📐 ${J.fmtNum(prop.area)} متر</span>` : '',
+    `<span class="pill">🔑 ${t.label}</span>`,
+  ].filter(Boolean).join('\n              ');
+
   const featGrid = (prop.features || []).length
     ? (prop.features || []).map(f => `<span class="feat yes">${J.feat(f)}</span>`).join('')
     : '<span class="muted">امکاناتی ثبت نشده</span>';
@@ -62,12 +71,9 @@ function render(prop) {
         <div class="detail-head animate-rise" style="animation-delay:.08s">
           <div>
             <h1 class="detail-title">${t.icon} ${J.escape(prop.title)}</h1>
-            <div class="detail-loc">📍 ${J.escape(prop.city)}${prop.region ? '، ' + J.escape(prop.region) : ''}</div>
+            <div class="detail-loc">${locParts.length ? '📍 ' + locParts.map(x => J.escape(x)).join('، ') : ''}</div>
             <div class="pill-row">
-              <span class="pill">👥 ${J.fmtNum(prop.guests)} مهمان</span>
-              <span class="pill">🛏 ${J.fmtNum(prop.bedrooms)} اتاق</span>
-              <span class="pill">📐 ${J.fmtNum(prop.area)} متر</span>
-              <span class="pill">🔑 ${t.label}</span>
+              ${pills}
             </div>
           </div>
           <div class="avg-box">
@@ -130,7 +136,7 @@ function render(prop) {
               </div>
               <div class="field">
                 <label>تاریخ خروج</label>
-                <input type="date" id="bOut" value="${out0}" required>
+                <input type="date" id="bOut" value="${out0}" min="${J.todayISO()}" required>
               </div>
             </div>
             <div class="field">
@@ -189,8 +195,20 @@ function initBooking(prop) {
     return total;
   }
 
-  chIn.onchange = recalc;
-  chOut.onchange = recalc;
+  /* خروج باید حداقل یک روز بعد از ورود باشد؛ ورود هم از امروز به بعد */
+  function clampDates() {
+    const today = J.todayISO();
+    if (chIn.value && chIn.value < today) chIn.value = today;
+    const minOut = chIn.value
+      ? J.toISO(new Date(new Date(chIn.value).getTime() + 86400000))
+      : today;
+    chOut.min = minOut;
+    if (chOut.value && chOut.value < minOut) chOut.value = minOut;
+    recalc();
+  }
+
+  chIn.onchange = clampDates;
+  chOut.onchange = clampDates;
   guests.oninput = recalc;
 
   f.onsubmit = e => {
@@ -228,7 +246,7 @@ function initBooking(prop) {
     successModal(id, total);
   };
 
-  recalc();
+  clampDates();
 }
 
 function successModal(id, total) {

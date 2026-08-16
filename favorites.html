@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>جایار | رزرو هتل و ویلا در سراسر ایران</title>
-<meta name="description" content="سامانه آنلاین رزرو اقامتگاه؛ هتل، ویلا، سوئیت و اقامتگاه در سراسر ایران">
+<title>علاقه‌مندی‌ها | جایار</title>
+<meta name="description" content="اقامتگاه‌های علاقه‌مندی شما در جایار — رزرو سریع از لیست ذخیره‌شده">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/tailwind.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>">
@@ -19,8 +19,7 @@
     </a>
     <div class="nav-links" id="navLinks">
       <a class="nav-link" href="index.html">جستجوی اقامتگاه</a>
-      <a class="nav-link" href="detail.html?id=v1">رزرو سریع</a>
-      <a class="nav-link" href="favorites.html">❤️ علاقه‌مندی‌ها</a>
+      <a class="nav-link active" href="favorites.html">❤️ علاقه‌مندی‌ها</a>
       <a class="nav-link" href="about-us.html">درباره ما</a>
       <a class="nav-link host-cta" href="host.html">میزبان شوید</a>
       <button class="theme-toggle" title="حالت روشن/تاریک"></button>
@@ -31,57 +30,15 @@
   </div>
 </nav>
 
-<header class="hero">
-  <div class="container">
-    <h1 class="hero-title animate-rise">اقامتگاه دلخواهت رو با <span class="animate-gradient">جایار</span> پیدا کن</h1>
-    <p class="hero-sub animate-rise" style="animation-delay:.1s">هتل، ویلا، سوئیت و اقامتگاه در سراسر ایران — رزرو آنلاین، قیمت شفاف، مهمان‌نوازی تضمینی</p>
-
-    <div class="search-card animate-rise" style="animation-delay:.2s">
-      <form id="searchForm" class="search-row">
-        <div class="search-field">
-          <label>مقصد</label>
-          <select id="searchCity"></select>
-        </div>
-        <div class="search-field">
-          <label>تاریخ ورود</label>
-          <input type="date" id="searchIn">
-        </div>
-        <div class="search-field">
-          <label>تاریخ خروج</label>
-          <input type="date" id="searchOut">
-        </div>
-        <div class="search-field">
-          <label>مهمان‌ها</label>
-          <input type="number" id="searchGuests" value="2" min="1" max="30">
-        </div>
-        <button class="btn btn-primary search-submit animate-glow" type="submit">جستجو</button>
-      </form>
-      <div class="popular">
-        <span class="muted" style="font-size:13px;">قصه‌های پرطرفدار:</span>
-        <span id="popularTags"></span>
-      </div>
-    </div>
-  </div>
-</header>
-
 <main class="section">
   <div class="container">
     <div class="section-head">
       <div class="section-title">
-        جستجو در اقامتگاه‌ها
+        ❤️ اقامتگاه‌های علاقه‌مندی
         <small id="resultCount"></small>
-      </div>
-      <div class="toolbar">
-        <select id="sortSelect">
-          <option value="recommended">مرتب‌سازی: پیشنهاد جایار</option>
-          <option value="price-asc">قیمت: کم به زیاد</option>
-          <option value="price-desc">قیمت: زیاد به کم</option>
-          <option value="rating">بالاترین امتیاز</option>
-        </select>
       </div>
     </div>
 
-    <div class="type-bar" id="typeBar"></div>
     <div class="grid" id="grid"></div>
   </div>
 </main>
@@ -91,7 +48,7 @@
     <div class="footer-inner">
       <div>
         <h4>🏡 جایار</h4>
-        <p class="muted">سامانه آنلاین رزرو هتل، ویلا و اقامتگاه در سراسر ایران. میزبان شو، اقامتگاهت را ثبت کن و از هر رزرو درآمد داشته باش.</p>
+        <p class="muted">سامانه آنلاین رزرو هتل، ویلا و اقامتگاه در سراسر ایران. اقامتگاه‌های دلخواهتان را ذخیره کنید و بعداً رزرو کنید.</p>
       </div>
       <div>
         <h4>دسترسی سریع</h4>
@@ -99,7 +56,6 @@
           <li><a href="index.html">جستجوی اقامتگاه</a></li>
           <li><a href="favorites.html">علاقه‌مندی‌ها</a></li>
           <li><a href="host.html">ثبت اقامتگاه</a></li>
-          <li><a href="detail.html?promo=1">رزرو سریع</a></li>
         </ul>
       </div>
       <div>
@@ -138,6 +94,6 @@
 <script src="js/common.js"></script>
 <script src="js/data.js"></script>
 <script src="js/store.js"></script>
-<script src="js/app.js"></script>
+<script src="js/favorites.js"></script>
 </body>
 </html>
