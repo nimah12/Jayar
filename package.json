@@ -5,6 +5,7 @@
   "main": "serve.js",
   "scripts": {
     "build:css": "npx tailwindcss -i css/tailwind-input.css -o css/tailwind.css",
+    "build:meta": "node scripts/build-meta.js",
     "watch:css": "npx tailwindcss -i css/tailwind-input.css -o css/tailwind.css --watch",
     "serve": "node serve.js",
     "start": "node serve.js",

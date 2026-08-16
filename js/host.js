@@ -42,7 +42,7 @@ function renderHostForm() {
       <div class="card animate-rise" style="margin-top:20px">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
           <div>
-            <h3>👋 خوش آمدید، ${J.escape(HOST.name)}</h3>
+            <h3>${J.ico('hand')} خوش آمدید، ${J.escape(HOST.name)}</h3>
             <p class="muted" style="font-size:13.5px">شماره تماس: ${J.escape(HOST.phone)} · ${J.fmtNum(J.db.props.filter(p => p.ownerId === HOST.id).length)} اقامتگاه ثبت‌شده</p>
           </div>
           <button class="btn btn-ghost btn-sm" id="logoutBtn">خروج از حساب</button>
@@ -58,7 +58,7 @@ function renderHostForm() {
 
   el.hostWrap.innerHTML = `
     <div class="card animate-rise" style="margin-top:20px">
-      <h3>🚪 ورود / ثبت‌نام میزبان</h3>
+      <h3>${J.ico('door-open')} ورود / ثبت‌نام میزبان</h3>
       <p class="muted" style="font-size:13.5px;margin-bottom:16px">برای ثبت اقامتگاه جدید ابتدا نام و شماره تماس خود را ثبت کنید.</p>
       <form class="form" id="hostJoinForm">
         <div class="form-grid">
@@ -76,7 +76,7 @@ function renderHostForm() {
     if (name.length < 3) return J.toast('نام و نام خانوادگی را کامل وارد کنید', 'error');
     if (!/^0\d{10}$/.test(phone)) return J.toast('شماره تماس معتبر نیست', 'error');
     const { host: acc, created } = await J.loginHost(name, phone);
-    if (created) J.toast('به‌عنوان میزبان ثبت‌نام شدید 🎉');
+    if (created) J.toast('به‌عنوان میزبان ثبت‌نام شدید');
     else J.toast('خوش آمدید!');
     J.db.host = acc;
     setTimeout(() => location.reload(), 700);
@@ -98,7 +98,7 @@ function renderRegisterForm() {
   const editing = isEdit ? J.db.props.find(p => String(p.id) === String(editingId)) : null;
   el.register.innerHTML = `
     <div class="card animate-rise">
-      <h3>${isEdit ? '✏️ ویرایش اقامتگاه' : '🏡 ثبت اقامتگاه جدید'}</h3>
+      <h3>${isEdit ? J.ico('pencil') + ' ویرایش اقامتگاه' : J.ico('home') + ' ثبت اقامتگاه جدید'}</h3>
       <p class="muted" style="font-size:13px;margin-bottom:16px">${isEdit ? 'تغییرات را اعمال کنید و روی «ذخیره تغییرات» بزنید.' : 'قیمت پیشنهادی خود را تعیین کنید؛ جایار پس از بررسی، اقامتگاه را در جستجو نمایش می‌دهد.'}</p>
       <form class="form" id="propForm">
         <div class="form-grid">
@@ -162,6 +162,8 @@ function renderRegisterForm() {
     };
   }
 
+  J.refreshIcons();
+
   $('#propForm').addEventListener('submit', e => {
     e.preventDefault();
     if (!HOST) {
@@ -199,10 +201,10 @@ function renderRegisterForm() {
 
     if (editingId) {
       J.db.props = J.db.props.map(p => (String(p.id) === String(editingId) ? n : p));
-      J.toast('اقامتگاه ویرایش شد ✅');
+      J.toast('اقامتگاه ویرایش شد');
     } else {
       J.db.props = [...J.db.props, n];
-      J.toast('اقامتگاه با موفقیت ثبت شد ✅');
+      J.toast('اقامتگاه با موفقیت ثبت شد');
     }
     editingId = null;
     renderRegisterForm();
@@ -214,12 +216,14 @@ function renderRegisterForm() {
 /* ---------- فهرست اقامتگاه‌های من ---------- */
 function renderMyProps() {
   if (!HOST) {
-    el.list.innerHTML = `<div class="empty-state"><div class="emoji">🔐</div><h3>ابتدا وارد شوید</h3><p class="muted">برای مشاهدهٔ اقامتگاه‌هایتان، ابتدا از تب «ثبت اقامتگاه جدید» وارد شوید.</p></div>`;
+    el.list.innerHTML = `<div class="empty-state"><div class="emoji">${J.ico('lock')}</div><h3>ابتدا وارد شوید</h3><p class="muted">برای مشاهدهٔ اقامتگاه‌هایتان، ابتدا از تب «ثبت اقامتگاه جدید» وارد شوید.</p></div>`;
+    J.refreshIcons();
     return;
   }
   const mine = J.db.props.filter(p => p.ownerId === HOST.id);
   if (!mine.length) {
-    el.list.innerHTML = `<div class="empty-state"><div class="emoji">🏚️</div><h3>هنوز اقامتگاهی ثبت نکرده‌اید</h3><p class="muted">از تب «ثبت اقامتگاه» اولین اقامتگاه خود را اضافه کنید.</p></div>`;
+    el.list.innerHTML = `<div class="empty-state"><div class="emoji">${J.ico('home')}</div><h3>هنوز اقامتگاهی ثبت نکرده‌اید</h3><p class="muted">از تب «ثبت اقامتگاه» اولین اقامتگاه خود را اضافه کنید.</p></div>`;
+    J.refreshIcons();
     return;
   }
   el.list.innerHTML = `<div class="host-list">${mine.map((p, i) => `
@@ -227,16 +231,16 @@ function renderMyProps() {
       <img src="${J.img(p.id, 300, 200)}" alt="" class="transition-opacity duration-300 opacity-90 group-hover:opacity-100">
       <div class="host-item-body">
         <div class="host-item-title">${J.escape(p.title)}</div>
-        <div class="muted" style="font-size:13px">📍 ${J.escape(p.city)} · ${J.fmtNum(p.price)} تومان/شب · ★ ${J.fmtNum(p.rating)}</div>
+        <div class="muted" style="font-size:13px">${J.ico('map-pin')} ${J.escape(p.city)} · ${J.fmtNum(p.price)} تومان/شب · ${J.ico('star')} ${J.fmtNum(p.rating)}</div>
         <div class="muted" style="font-size:12.5px">${J.escape(p.desc)}</div>
         <div style="margin-top:6px">${[
-          p.guests ? `<span class="pill">👥 ${J.fmtNum(p.guests)} مهمان</span>` : '',
-          p.bedrooms ? `<span class="pill">🛏 ${J.fmtNum(p.bedrooms)} اتاق</span>` : '',
+          p.guests ? `<span class="pill">${J.ico('users')} ${J.fmtNum(p.guests)} مهمان</span>` : '',
+          p.bedrooms ? `<span class="pill">${J.ico('bed')} ${J.fmtNum(p.bedrooms)} اتاق</span>` : '',
         ].join('')}</div>
       </div>
       <div class="host-item-actions">
-        <a class="btn btn-soft btn-sm" href="detail.html?id=${p.id}" target="_blank" rel="noopener">👁 نمایش عمومی</a>
-        <button class="btn btn-ghost btn-sm" data-edit="${p.id}">✏️ ویرایش</button>
+        <a class="btn btn-soft btn-sm" href="detail.html?id=${p.id}" target="_blank" rel="noopener">${J.ico('eye')} نمایش عمومی</a>
+        <button class="btn btn-ghost btn-sm" data-edit="${p.id}">${J.ico('pencil')} ویرایش</button>
         <button class="btn btn-danger-soft btn-sm" data-del="${p.id}">حذف</button>
       </div>
     </div>`).join('')}</div>`;
@@ -249,19 +253,21 @@ function renderMyProps() {
       J.toast(`این اقامتگاه ${J.fmtNum(pendingCount)} رزرو در انتظار تأیید دارد؛ ابتدا آن‌ها را تأیید یا رد کنید`, 'error');
       return;
     }
-    if (await J.confirm('حذف اقامتگاه', 'این اقامتگاه برای همیشه حذف میشود.', '🗑️', 'حذف')) {
+    if (await J.confirm('حذف اقامتگاه', 'این اقامتگاه برای همیشه حذف میشود.', 'trash-2', 'حذف')) {
       J.db.props = J.db.props.filter(x => x.id !== propId);
       J.toast('اقامتگاه حذف شد', 'error');
       renderMyProps();
     }
   });
   $$('[data-edit]').forEach(b => b.onclick = () => startEdit(b.dataset.edit));
+  J.refreshIcons();
 }
 
 /* ---------- رزروهای دریافتی ---------- */
 function renderBookings() {
   if (!HOST) {
-    el.bookings.innerHTML = `<div class="empty-state"><div class="emoji">🔐</div><h3>ابتدا وارد شوید</h3><p class="muted">برای مشاهدهٔ رزروهای دریافتی، ابتدا از تب «ثبت اقامتگاه جدید» وارد شوید.</p></div>`;
+    el.bookings.innerHTML = `<div class="empty-state"><div class="emoji">${J.ico('lock')}</div><h3>ابتدا وارد شوید</h3><p class="muted">برای مشاهدهٔ رزروهای دریافتی، ابتدا از تب «ثبت اقامتگاه جدید» وارد شوید.</p></div>`;
+    J.refreshIcons();
     return;
   }
   const mine = J.db.props.filter(p => p.ownerId === HOST.id);
@@ -269,7 +275,8 @@ function renderBookings() {
   const list = J.db.bookings.filter(b => ids.has(b.propertyId));
 
   if (!list.length) {
-    el.bookings.innerHTML = `<div class="empty-state"><div class="emoji">📭</div><h3>هنوز رزروی دریافت نکرده‌اید</h3><p class="muted">به محض رزرو اقامتگاه‌تان توسط مهمان، اینجا نمایش داده می‌شود.</p></div>`;
+    el.bookings.innerHTML = `<div class="empty-state"><div class="emoji">${J.ico('inbox')}</div><h3>هنوز رزروی دریافت نکرده‌اید</h3><p class="muted">به محض رزرو اقامتگاه‌تان توسط مهمان، اینجا نمایش داده می‌شود.</p></div>`;
+    J.refreshIcons();
     return;
   }
 
@@ -283,10 +290,10 @@ function renderBookings() {
           <span class="status ${st.cls}">${st.label}</span>
         </div>
         <div class="muted" style="font-size:13px;margin-top:4px">
-          👤 ${J.escape(b.name)} · 📞 ${J.escape(b.phone)}
+          ${J.ico('user')} ${J.escape(b.name)} · ${J.ico('phone')} ${J.escape(b.phone)}
         </div>
         <div class="muted" style="font-size:12.5px;margin-top:2px">
-          📅 ${J.fmtDate(b.checkin)} ← ${J.fmtDate(b.checkout)} · ${J.fmtNum(b.nights)} شب · ${J.fmtNum(b.guests)} مهمان
+          ${J.ico('calendar')} ${J.fmtDate(b.checkin)} ← ${J.fmtDate(b.checkout)} · ${J.fmtNum(b.nights)} شب · ${J.fmtNum(b.guests)} مهمان
         </div>
         <div class="muted" style="font-size:12.5px">کد رزرو: ${J.escape(b.id)}</div>
       </div>
@@ -302,7 +309,7 @@ function renderBookings() {
 
   $$('[data-ok]').forEach(b => b.onclick = () => {
     J.updateBookingStatus(b.dataset.ok, 'ok');
-    J.toast('رزرو تأیید شد ✅');
+    J.toast('رزرو تأیید شد');
     renderBookings();
   });
   $$('[data-rej]').forEach(b => b.onclick = () => {
@@ -310,17 +317,20 @@ function renderBookings() {
     J.toast('رزرو رد شد');
     renderBookings();
   });
+  J.refreshIcons();
 }
 
 /* ---------- آمار میزبان ---------- */
 function renderStats() {
   if (!HOST) {
-    el.stats.innerHTML = `<div class="empty-state"><div class="emoji">🔐</div><h3>ابتدا وارد شوید</h3><p class="muted">برای مشاهدهٔ آمار، ابتدا از تب «ثبت اقامتگاه جدید» وارد شوید.</p></div>`;
+    el.stats.innerHTML = `<div class="empty-state"><div class="emoji">${J.ico('lock')}</div><h3>ابتدا وارد شوید</h3><p class="muted">برای مشاهدهٔ آمار، ابتدا از تب «ثبت اقامتگاه جدید» وارد شوید.</p></div>`;
+    J.refreshIcons();
     return;
   }
   const mine = J.db.props.filter(p => p.ownerId === HOST.id);
   if (!mine.length) {
-    el.stats.innerHTML = `<div class="empty-state"><div class="emoji">📊</div><h3>هنوز اقامتگاهی ثبت نکرده‌اید</h3><p class="muted">با ثبت اولین اقامتگاه، آمار اینجا نمایش داده می‌شود.</p></div>`;
+    el.stats.innerHTML = `<div class="empty-state"><div class="emoji">${J.ico('chart-column')}</div><h3>هنوز اقامتگاهی ثبت نکرده‌اید</h3><p class="muted">با ثبت اولین اقامتگاه، آمار اینجا نمایش داده می‌شود.</p></div>`;
+    J.refreshIcons();
     return;
   }
 
@@ -335,24 +345,25 @@ function renderStats() {
 
   el.stats.innerHTML = `
     <div class="card animate-rise">
-      <h3>📈 عملکرد اقامتگاه‌های شما</h3>
+      <h3>${J.ico('trending-up')} عملکرد اقامتگاه‌های شما</h3>
       <div class="stat-grid" style="margin-top:14px">
-        <div class="stat-card"><div class="emoji" style="font-size:26px">📋</div><div class="stat-num">${J.fmtNum(list.length)}</div><div class="stat-lbl">کل رزروها</div></div>
-        <div class="stat-card"><div class="emoji" style="font-size:26px">⏳</div><div class="stat-num">${J.fmtNum(pending.length)}</div><div class="stat-lbl">در انتظار تأیید</div></div>
-        <div class="stat-card"><div class="emoji" style="font-size:26px">✅</div><div class="stat-num">${J.fmtNum(confirmed.length)}</div><div class="stat-lbl">رزرو تأییدشده</div></div>
-        <div class="stat-card"><div class="emoji" style="font-size:26px">💰</div><div class="stat-num">${J.fmtPrice(revenue)}</div><div class="stat-lbl">درآمد کل (تأییدشده)</div></div>
+        <div class="stat-card"><div class="emoji" style="font-size:26px">${J.ico('clipboard-list')}</div><div class="stat-num">${J.fmtNum(list.length)}</div><div class="stat-lbl">کل رزروها</div></div>
+        <div class="stat-card"><div class="emoji" style="font-size:26px">${J.ico('hourglass')}</div><div class="stat-num">${J.fmtNum(pending.length)}</div><div class="stat-lbl">در انتظار تأیید</div></div>
+        <div class="stat-card"><div class="emoji" style="font-size:26px">${J.ico('circle-check')}</div><div class="stat-num">${J.fmtNum(confirmed.length)}</div><div class="stat-lbl">رزرو تأییدشده</div></div>
+        <div class="stat-card"><div class="emoji" style="font-size:26px">${J.ico('banknote')}</div><div class="stat-num">${J.fmtPrice(revenue)}</div><div class="stat-lbl">درآمد کل (تأییدشده)</div></div>
       </div>
     </div>
 
     <div class="card animate-rise" style="margin-top:18px">
-      <h3>👁 پربازدیدترین اقامتگاه‌ها</h3>
+      <h3>${J.ico('eye')} پربازدیدترین اقامتگاه‌ها</h3>
       ${top.map((p, i) => `
         <div class="rank-row" style="margin-top:${i === 0 ? '14px' : '8px'}">
           <span class="rank-num">${i + 1}</span>
           <span class="rank-title">${J.escape(p.title)}</span>
-          <span class="rank-views">👁 ${J.fmtNum(p.views || 0)} بازدید · ${J.fmtNum(list.filter(b => String(b.propertyId) === String(p.id)).length)} رزرو</span>
+          <span class="rank-views">${J.ico('eye')} ${J.fmtNum(p.views || 0)} بازدید · ${J.fmtNum(list.filter(b => String(b.propertyId) === String(p.id)).length)} رزرو</span>
         </div>`).join('')}
     </div>`;
+  J.refreshIcons();
 }
 
 /* ---------- تعویض تب / کمکی ---------- */

@@ -48,20 +48,21 @@ function render() {
   el.grid.innerHTML = list.length
     ? list.map((p, i) => J.cardHTML(p, i)).join('')
     : `<div class="empty-state animate-rise">
-        <div class="emoji">🔍</div>
+        <div class="emoji">${J.ico('search')}</div>
         <h3>اقامتگاهی پیدا نشد</h3>
         <p class="muted">فیلترها را کم‌تر کنید یا شهر دیگری را امتحان کنید.</p>
       </div>`;
   $$('.type-chip', el.typeBar).forEach(ch =>
     ch.classList.toggle('active', ch.dataset.type === state.type));
+  J.refreshIcons();
 }
 
 /* ---------- چیپ نوع ---------- */
 function renderTypes() {
-  const items = [{ key: 'همه', label: 'همه اقامتگاه‌ها', icon: '🗺️' }].concat(
+  const items = [{ key: 'همه', label: 'همه اقامتگاه‌ها', icon: 'map' }].concat(
     Object.entries(J.TYPES).map(([k, v]) => ({ key: k, label: v.label, icon: v.icon })));
   el.typeBar.innerHTML = items.map((t, i) =>
-    `<button class="type-chip animate-rise ${state.type === t.key ? 'active' : ''}" data-type="${t.key}" style="animation-delay:${0.15 + i * 0.05}s">${t.icon} ${t.label}</button>`).join('');
+    `<button class="type-chip animate-rise ${state.type === t.key ? 'active' : ''}" data-type="${t.key}" style="animation-delay:${0.15 + i * 0.05}s">${J.ico(t.icon)} ${t.label}</button>`).join('');
   el.typeBar.onclick = e => {
     const chip = e.target.closest('.type-chip');
     if (!chip) return;
@@ -130,7 +131,6 @@ function bindFavs() {
     e.preventDefault();
     const now = toggleFav(btn.dataset.fav);
     btn.classList.toggle('active', now);
-    btn.textContent = now ? '❤️' : '🤍';
     btn.classList.remove('animate-heart-pop');
     void btn.offsetWidth;
     btn.classList.add('animate-heart-pop');

@@ -359,6 +359,22 @@ body.no-scroll { overflow: hidden; }
 }
 .contact-row p { font-size: 13px; margin-top: 2px; }
 
+/* ---------- آیکون‌های Lucide (محلی — js/vendor/lucide.min.js) ---------- */
+.ico {
+  display: inline-block; width: 1.15em; height: 1.15em; flex: none;
+  vertical-align: -0.18em;
+}
+.ico-fill { fill: currentColor; }
+.btn .ico, .pill .ico, .nav-link .ico, .tab-btn .ico, .feat .ico, .type-badge .ico { vertical-align: -3px; }
+.fav-btn .ico { width: 19px; height: 19px; fill: none; }
+.fav-btn.active .ico { fill: currentColor; }
+.rating-badge .ico, .rate-box .ico, .star .ico { width: 13px; height: 13px; vertical-align: -2px; }
+.star-fill { fill: currentColor; }
+.brand-icon .ico { width: 20px; height: 20px; vertical-align: middle; }
+.social-btn .ico { width: 17px; height: 17px; vertical-align: middle; }
+.contact-ico .ico, .team-avatar .ico { width: 22px; height: 22px; }
+.empty-state .emoji .ico, .stat-card .emoji .ico { width: 1em; height: 1em; }
+
 /* ---------- تیم جایار (درباره ما) ---------- */
 .team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
 .team-card {

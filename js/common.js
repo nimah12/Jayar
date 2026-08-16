@@ -17,11 +17,20 @@ J.fmtDate = iso => {
   return new Date(iso).toLocaleDateString('fa-IR', { year: 'numeric', month: 'long', day: 'numeric' });
 };
 
+/* آیکون‌های Lucide — کتابخانه به‌صورت محلی (js/vendor/lucide.min.js) و بدون اینترنت
+   J.ico(name): مارک‌آپ placeholder که lucide با SVG جایگزین می‌کند
+   J.refreshIcons(): بعد از هر رندر داینامیک صدا زده می‌شود (idempotent) */
+J.ico = name => `<i class="ico" data-lucide="${name}"></i>`;
+J.refreshIcons = (root = document) => {
+  if (!window.lucide || typeof lucide.createIcons !== 'function') return;
+  try { lucide.createIcons({}, root); } catch { /* هرگز اجرای صفحه را نشکند */ }
+};
+
 J.TYPES = {
-  hotel: { label: 'هتل', icon: '🏨' },
-  villa: { label: 'ویلا', icon: '🏡' },
-  suite: { label: 'سوئیت', icon: '✨' },
-  apartment: { label: 'اقامتگاه', icon: '🏢' },
+  hotel: { label: 'هتل', icon: 'Hotel' },
+  villa: { label: 'ویلا', icon: 'Home' },
+  suite: { label: 'سوئیت', icon: 'Sparkles' },
+  apartment: { label: 'اقامتگاه', icon: 'Building2' },
 };
 
 J.FEATURES = {
@@ -35,11 +44,11 @@ J.FEATURES = {
 J.cityTitle = city => city || 'همه ایران';
 
 J.FICON = {
-  wifi: '📶', parking: '🅿️', tv: '📺', breakfast: '🥐', kitchen: '🍳', aircon: '❄️',
-  washing: '🧺', coffee: '☕', jacuzzi: '🛁', pool: '🏊', gym: '🏋️', park: '🌳',
-  bbq: '🍢', restaurant: '🍽️', sea: '🌊', mountain: '⛰️', balcony: '🪑',
+  wifi: 'Wifi', parking: 'SquareParking', tv: 'Tv', breakfast: 'Croissant', kitchen: 'CookingPot', aircon: 'Snowflake',
+  washing: 'ShoppingBasket', coffee: 'Coffee', jacuzzi: 'Bath', pool: 'Waves', gym: 'Dumbbell', park: 'TreePine',
+  bbq: 'Flame', restaurant: 'Utensils', sea: 'Waves', mountain: 'Mountain', balcony: 'Armchair',
 };
-J.feat = k => `${J.FICON[k] || '✦'} ${J.FEATURES[k] || k}`;
+J.feat = k => `${J.ico(J.FICON[k] || 'sparkle')} ${J.FEATURES[k] || k}`;
 
 /* کارت اقامتگاه — مشترک بین صفحهٔ اصلی و علاقه‌مندی‌ها */
 J.cardHTML = (p, idx = 0) => {
@@ -53,14 +62,14 @@ J.cardHTML = (p, idx = 0) => {
       <a class="img-link" href="detail.html?id=${p.id}">
         <img src="${J.img(p.id, 900, 600)}" alt="${J.escape(p.title)}" loading="lazy" class="transition-transform duration-500 group-hover:scale-105">
       </a>
-      <span class="rating-badge">★ ${J.fmtNum(p.rating)}</span>
-      <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${p.id}" title="علاقه‌مندی">${isFav ? '❤️' : '🤍'}</button>
-      <span class="type-badge">${t.icon} ${t.label}</span>
+      <span class="rating-badge">${J.ico('star')} ${J.fmtNum(p.rating)}</span>
+      <button class="fav-btn ${isFav ? 'active' : ''}" data-fav="${p.id}" title="علاقه‌مندی">${J.ico('heart')}</button>
+      <span class="type-badge">${J.ico(t.icon)} ${t.label}</span>
     </div>
     <div class="property-body">
       <div>
         <a class="property-title transition-colors duration-200 group-hover:text-emerald-700" href="detail.html?id=${p.id}">${J.escape(p.title)}</a>
-        <div class="property-loc">📍 ${J.escape(p.city)}${p.region ? '، ' + J.escape(p.region) : ''}</div>
+        <div class="property-loc">${J.ico('map-pin')} ${J.escape(p.city)}${p.region ? '، ' + J.escape(p.region) : ''}</div>
       </div>
       <div class="property-feats">${feats}</div>
       <div class="property-foot">
@@ -79,16 +88,17 @@ J.renderStats = (sel = '#stats') => {
   const el = J.$(sel);
   if (!el) return;
   const stats = [
-    ['🏡', J.BASE_PROPERTIES.length, 'اقامتگاه نمونه'],
-    ['🗺️', J.CITIES.length, 'شهر مقصد'],
-    ['✨', Object.keys(J.TYPES).length, 'نوع اقامتگاه'],
+    ['home', J.BASE_PROPERTIES.length, 'اقامتگاه نمونه'],
+    ['map', J.CITIES.length, 'شهر مقصد'],
+    ['sparkles', Object.keys(J.TYPES).length, 'نوع اقامتگاه'],
   ];
   el.innerHTML = stats.map(([icon, n, label]) => `
     <div class="card" style="text-align:center;padding:20px">
-      <div style="font-size:30px">${icon}</div>
+      <div style="font-size:30px">${J.ico(icon)}</div>
       <div style="font-size:26px;font-weight:900;color:var(--brand-dark);margin-top:6px">${J.fmtNum(n)}</div>
       <div class="muted" style="font-size:13px">${label}</div>
     </div>`).join('');
+  J.refreshIcons();
 };
 
 /* شمارش بازدید اقامتگاه — برای آمار «پربازدیدترین‌ها» در پنل میزبان */
@@ -137,13 +147,13 @@ J.toast = (msg, type = 'success') => {
   }, 3200);
 };
 
-J.confirm = (title, desc, emoji = '❓', okText = 'تایید') =>
+J.confirm = (title, desc, icon = 'circle-help', okText = 'تایید') =>
   new Promise(resolve => {
     const back = document.createElement('div');
     back.className = 'modal-back';
     back.innerHTML = `
       <div class="modal">
-        <div class="emoji">${emoji}</div>
+        <div class="emoji">${J.ico(icon)}</div>
         <h3>${J.escape(title)}</h3>
         <p>${J.escape(desc)}</p>
         <div class="modal-actions">
@@ -156,6 +166,7 @@ J.confirm = (title, desc, emoji = '❓', okText = 'تایید') =>
     J.$('[data-act="no"]', back).onclick = () => close(false);
     back.onclick = e => { if (e.target === back) close(false); };
     document.body.appendChild(back);
+    J.refreshIcons();
   });
 
 J.initTheme = () => {
@@ -163,7 +174,12 @@ J.initTheme = () => {
   const dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
   if (dark) document.documentElement.setAttribute('data-theme', 'dark');
   const btn = J.$('.theme-toggle');
-  const sync = () => { if (btn) btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙'; };
+  const sync = () => {
+    if (!btn) return;
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    btn.innerHTML = J.ico(dark ? 'sun' : 'moon');
+    J.refreshIcons();
+  };
   sync();
   if (btn) btn.onclick = () => {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
@@ -244,6 +260,9 @@ J.onReady(() => {
   });
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
 });
+
+/* رندر آیکون‌های استاتیک پس از آماده‌شدن DOM (و هر رندر داینامیک که refreshIcons می‌خواند) */
+J.onReady(() => J.refreshIcons());
 
 /* ---------- هایلایت لینک صفحهٔ فعلی در نوبار (دسکتاپ و منوی موبایل) ---------- */
 J.onReady(() => {

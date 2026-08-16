@@ -13,7 +13,9 @@ const REVIEW_POOL = [
 
 function stars(n) {
   const full = Math.max(1, Math.round(n));
-  return '★'.repeat(full) + '☆'.repeat(5 - full);
+  const on = '<i class="ico star-fill" data-lucide="star"></i>'.repeat(full);
+  const off = '<i class="ico" data-lucide="star"></i>'.repeat(5 - full);
+  return on + off;
 }
 
 function sampleReviews(prop) {
@@ -45,10 +47,10 @@ function render(prop) {
   /* فیلدهای اختیاری: فقط مقادیر موجود نمایش داده می‌شوند (بدون «،» و «۰» اضافی) */
   const locParts = [prop.city, prop.region].filter(Boolean);
   const pills = [
-    prop.guests ? `<span class="pill">👥 ${J.fmtNum(prop.guests)} مهمان</span>` : '',
-    prop.bedrooms ? `<span class="pill">🛏 ${J.fmtNum(prop.bedrooms)} اتاق</span>` : '',
-    prop.area ? `<span class="pill">📐 ${J.fmtNum(prop.area)} متر</span>` : '',
-    `<span class="pill">🔑 ${t.label}</span>`,
+    prop.guests ? `<span class="pill">${J.ico('users')} ${J.fmtNum(prop.guests)} مهمان</span>` : '',
+    prop.bedrooms ? `<span class="pill">${J.ico('bed')} ${J.fmtNum(prop.bedrooms)} اتاق</span>` : '',
+    prop.area ? `<span class="pill">${J.ico('ruler')} ${J.fmtNum(prop.area)} متر</span>` : '',
+    `<span class="pill">${J.ico('key')} ${t.label}</span>`,
   ].filter(Boolean).join('\n              ');
 
   const featGrid = (prop.features || []).length
@@ -70,8 +72,8 @@ function render(prop) {
       <div>
         <div class="detail-head animate-rise" style="animation-delay:.08s">
           <div>
-            <h1 class="detail-title">${t.icon} ${J.escape(prop.title)}</h1>
-            <div class="detail-loc">${locParts.length ? '📍 ' + locParts.map(x => J.escape(x)).join('، ') : ''}</div>
+            <h1 class="detail-title">${J.ico(t.icon)} ${J.escape(prop.title)}</h1>
+            <div class="detail-loc">${locParts.length ? J.ico('map-pin') + ' ' + locParts.map(x => J.escape(x)).join('، ') : ''}</div>
             <div class="pill-row">
               ${pills}
             </div>
@@ -83,22 +85,22 @@ function render(prop) {
         </div>
 
         <div class="card animate-rise transition-transform duration-200 hover:-translate-y-0.5" style="margin-top:18px;animation-delay:.12s">
-          <h3>ℹ️ درباره این اقامتگاه</h3>
+          <h3>${J.ico('info')} درباره این اقامتگاه</h3>
           <p class="muted">${J.escape(prop.desc)}</p>
         </div>
 
         <div class="card animate-rise" style="animation-delay:.16s">
-          <h3>✨ امکانات</h3>
+          <h3>${J.ico('sparkles')} امکانات</h3>
           <div class="feat-grid">${featGrid}</div>
         </div>
 
         <div class="card animate-rise" style="animation-delay:.2s">
-          <h3>📊 امتیازات از نگاه مهمان‌ها</h3>
+          <h3>${J.ico('chart-column')} امتیازات از نگاه مهمان‌ها</h3>
           <div class="points" style="display:grid;grid-template-columns:1fr 1fr;gap:14px 24px">${pointBars(prop)}</div>
         </div>
 
         <div class="card animate-rise" style="animation-delay:.24s">
-          <h3>💬 نظرات مهمان‌ها</h3>
+          <h3>${J.ico('message-circle')} نظرات مهمان‌ها</h3>
           ${sampleReviews(prop).map(r => `
             <div style="border-top:1px solid var(--border);padding:14px 4px">
               <div style="display:flex;justify-content:space-between;align-items:center">
@@ -110,7 +112,7 @@ function render(prop) {
         </div>
 
         <div class="card animate-rise" style="animation-delay:.28s">
-          <h3>📜 قوانین خانه</h3>
+          <h3>${J.ico('scroll')} قوانین خانه</h3>
           <ul class="muted" style="padding-inline-start:22px;font-size:13.5px;line-height:2.2">
             <li>ورود از ساعت ۱۴:۰۰ و خروج تا ۱۲:۰۰</li>
             <li>ارائهٔ مدارک هویتی برای هر مهمان الزامی است</li>
@@ -124,7 +126,7 @@ function render(prop) {
         <div class="card book-box animate-rise" style="animation-delay:.1s">
           <div class="book-price"><b id="priceLbl">${J.fmtNum(prop.price)}</b><span>تومان / شب</span></div>
           <div class="book-rate">
-            <span class="rate-box">★ ${J.fmtNum(prop.rating)}</span>
+            <span class="rate-box">${J.ico('star')} ${J.fmtNum(prop.rating)}</span>
             <span>${J.fmtNum(prop.reviews)} نظر</span>
           </div>
 
@@ -248,7 +250,7 @@ function successModal(id, total) {
   back.className = 'modal-back';
   back.innerHTML = `
     <div class="modal">
-      <div class="emoji">🎉</div>
+      <div class="emoji">${J.ico('party-popper')}</div>
       <h3>رزرو با موفقیت ثبت شد</h3>
       <p>کد رزرو: <b>${J.escape(id.toUpperCase().slice(0, 10))}</b></p>
       <p>مبلغ قابل پرداخت: <b>${J.fmtPrice(total)}</b></p>
@@ -262,6 +264,7 @@ function successModal(id, total) {
   $('#closeModal', back).onclick = close;
   back.addEventListener('click', e => { if (e.target === back) close(); });
   document.body.appendChild(back);
+  J.refreshIcons();
 }
 
 /* ---------- شروع صفحه ---------- */
@@ -271,11 +274,12 @@ function boot() {
   if (!prop) {
     $('#wrap').innerHTML = `
       <div class="empty-state" style="margin-top:30px">
-        <div class="emoji">😕</div>
+        <div class="emoji">${J.ico('frown')}</div>
         <h3>اقامتگاهی یافت نشد</h3>
         <p class="muted">امکان دارد این اقامتگاه حذف شده باشد.</p>
         <a href="index.html" class="btn btn-primary" style="margin-top:16px">بازگشت به جستجو</a>
       </div>`;
+    J.refreshIcons();
     return;
   }
 
@@ -298,6 +302,7 @@ function boot() {
   J.recordView(prop.id); /* شمارش بازدید برای آمار پربازدیدترین‌ها */
   render(prop);
   initBooking(prop);
+  J.refreshIcons();
 }
 
 J.onReady(boot);

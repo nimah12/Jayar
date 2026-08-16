@@ -50,10 +50,13 @@ npm start
 |---|---|
 | `npm run serve` / `npm start` | اجرای سرور محلی (استاتیک + API) روی پورت ۵۸۷۱ |
 | `npm run build:css` | بازتولید `css/tailwind.css` از `css/tailwind-input.css` |
+| `npm run build:meta` | بازنویسی تگ‌های SEO همهٔ صفحات از `site.config.js` (بعد از تغییر دامنه) |
 | `npm run watch:css` | بازتولید خودکار CSS هنگام تغییر فایل‌ها (برای توسعه) |
 | `npm test` | تست خودکار API با `node:test` (سرور در پورت و دیتابیس جداگانه اجرا می‌شود) |
 
 > بعد از هر تغییر در HTML/JS، اگر کلاس Tailwind جدید اضافه کردید، `npm run build:css` را اجرا کنید.
+
+**تغییر دامنهٔ سایت:** فقط `SITE_URL` را در `site.config.js` عوض کنید و `npm run build:meta` را اجرا کنید — تگ‌های `canonical`، `og:url` و `og:image` در هر ۸ صفحه به‌طور خودکار با دامنهٔ جدید بازنویسی می‌شوند (اجرای دوباره بدون تغییر بی‌اثر است).
 
 ## 📁 ساختار پروژه
 
@@ -67,7 +70,10 @@ npm start
 ├── faq.html            # سوالات متداول (آکاردئون بدون JS)
 ├── rules.html          # قوانین جایار برای مهمانان و میزبانان
 ├── serve.js            # سرور محلی: استاتیک + API (بدون وابستگی) با ذخیره در data/db.json
+├── site.config.js      # پیکربندی سایت — دامنهٔ اصلی (SITE_URL) برای تگ‌های SEO
 ├── package.json
+├── scripts/
+│   └── build-meta.js   # بازتولید canonical/og:url/og:image از site.config.js (npm run build:meta)
 │
 ├── css/
 │   ├── style.css           # استایل‌های سفارشی جایار (متغیرها، حالت تاریک، واکنش‌گرایی)
@@ -78,6 +84,8 @@ npm start
 │   ├── common.js   # فضای نام J: ابزارها، escape، فرمت اعداد/تاریخ، J.cardHTML، toast، modal
 │   ├── data.js     # داده‌های نمونه (J.BASE_PROPERTIES) + انتخاب تصویر محلی J.img
 │   ├── store.js    # لایهٔ ذخیره‌سازی روی localStorage (J.db)
+│   └── vendor/
+│       └── lucide.min.js  # آیکون‌های Lucide (محلی — بدون نیاز به اینترنت؛ با `<i data-lucide>` و `J.refreshIcons()`)
 │   ├── app.js      # منطق صفحهٔ اصلی
 │   ├── detail.js   # منطق صفحهٔ جزئیات و رزرو
 │   ├── host.js     # منطق پنل میزبان
