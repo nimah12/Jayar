@@ -1,9 +1,24 @@
 /* ==================== جایار — داده‌های نمونه ==================== */
 
 /* تصویر محلی واقعی — از پوشهٔ images (بدون نیاز به اینترنت هنگام نمایش) */
+/* تصاویر اختصاصی برخی اقامتگاه‌ها — جایگزین تصاویر نمونه
+   برای هر اقامتگاه ۳ عکس: seed اصلی (کارت‌ها + تصویر اصلی گالری) و seed های -b/-c (تصاویر کناری گالری) */
+const IMG_SPECIAL = {
+  'v1': 'images/kish-villa-1.jpg',   'v1-b': 'images/kish-villa-2.jpg',   'v1-c': 'images/kish-villa-3.jpg',
+  'h1': 'images/pars-razi-hotel-1.webp', 'h1-b': 'images/pars-razi-hotel-2.webp', 'h1-c': 'images/pars-razi-hotel-3.webp',
+  'v2': 'images/kashan-villa-1.webp', 'v2-b': 'images/kashan-villa-2.webp', 'v2-c': 'images/kashan-villa-3.webp',
+  's1': 'images/mashhad-suite-1.jpg', 's1-b': 'images/mashhad-suite-2.jpg', 's1-c': 'images/mashhad-suite-3.jpg',
+  'a1': 'images/yazd-house-1.webp',  'a1-b': 'images/yazd-house-2.webp',  'a1-c': 'images/yazd-house-3.webp',
+  'h2': 'images/tabriz-hotel-1.jpg', 'h2-b': 'images/tabriz-hotel-2.jpg', 'h2-c': 'images/tabriz-hotel-3.jpg',
+  'v3': 'images/chalus-villa-1.jpg', 'v3-b': 'images/chalus-villa-2.jpg', 'v3-c': 'images/chalus-villa-3.jpg',
+  'a2': 'images/isfahan-apartment-1.png', 'a2-b': 'images/isfahan-apartment-2.jpg', 'a2-c': 'images/isfahan-apartment-3.jpg',
+  'h3': 'images/rasht-hotel-1.jpg',  'h3-b': 'images/rasht-hotel-2.jpg',  'h3-c': 'images/rasht-hotel-3.jpg',
+  's2': 'images/shiraz-suite-1.jpg', 's2-b': 'images/shiraz-suite-2.jpg', 's2-c': 'images/shiraz-suite-3.jpg',
+};
 const IMG_POOL = 15;
 J.img = (seed, _w, _h) => {
   const s = String(seed);
+  if (IMG_SPECIAL[s]) return IMG_SPECIAL[s];
   let sum = 0;
   for (let i = 0; i < s.length; i++) sum += s.charCodeAt(i);
   const n = ((sum % IMG_POOL) + IMG_POOL) % IMG_POOL + 1;

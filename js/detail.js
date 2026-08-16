@@ -57,14 +57,23 @@ function render(prop) {
     ? (prop.features || []).map(f => `<span class="feat yes">${J.feat(f)}</span>`).join('')
     : '<span class="muted">امکاناتی ثبت نشده</span>';
 
+  const gallery = [
+    J.img(prop.id, 1280, 640),
+    J.img(prop.id + '-b', 640, 460),
+    J.img(prop.id + '-c', 640, 460),
+  ];
+
   $('#wrap').innerHTML = `
     <div class="gallery animate-rise">
       <div class="gallery-main">
-        <img src="${J.img(prop.id, 1280, 640)}" alt="${J.escape(prop.title)}">
+        <img id="gMain" src="${gallery[0]}" alt="${J.escape(prop.title)}">
+        <button type="button" class="g-nav g-prev" data-gdir="-1" aria-label="عکس قبلی">${J.ico('chevron-right')}</button>
+        <button type="button" class="g-nav g-next" data-gdir="1" aria-label="عکس بعدی">${J.ico('chevron-left')}</button>
+        <span class="g-count"></span>
       </div>
       <div class="gallery-side">
-        <img src="${J.img(prop.id + '-b', 640, 460)}" alt="">
-        <img src="${J.img(prop.id + '-c', 640, 460)}" alt="">
+        <img class="g-thumb" data-gi="1" src="${gallery[1]}" alt="">
+        <img class="g-thumb" data-gi="2" src="${gallery[2]}" alt="">
       </div>
     </div>
 
@@ -267,6 +276,32 @@ function successModal(id, total) {
   J.refreshIcons();
 }
 
+/* ---------- گالری اسلایدری: جابه‌جایی بین ۳ عکس با دکمه و کلیک روی تصاویر کناری ---------- */
+function initGallery(gallery) {
+  let cur = 0;
+  let fadeT = null;
+  const main = $('#gMain');
+  const thumbs = J.$$('.g-thumb');
+  const count = $('.g-count');
+
+  const show = i => {
+    cur = ((i % gallery.length) + gallery.length) % gallery.length;
+    clearTimeout(fadeT);
+    main.style.transition = 'opacity .18s ease';
+    main.style.opacity = '0';
+    fadeT = setTimeout(() => {
+      main.src = gallery[cur];
+      main.style.opacity = '1';
+    }, 180);
+    thumbs.forEach(t => t.classList.toggle('active', +t.dataset.gi === cur));
+    count.textContent = `${J.fmtNum(cur + 1)} / ${J.fmtNum(gallery.length)}`;
+  };
+
+  J.$$('.g-nav').forEach(b => b.onclick = () => show(cur + +b.dataset.gdir));
+  thumbs.forEach(t => t.onclick = () => show(+t.dataset.gi));
+  show(0);
+}
+
 /* ---------- شروع صفحه ---------- */
 function boot() {
   const prop = J.getProperty(q.get('id') || 'v1');
@@ -301,6 +336,7 @@ function boot() {
   }
   J.recordView(prop.id); /* شمارش بازدید برای آمار پربازدیدترین‌ها */
   render(prop);
+  initGallery([J.img(prop.id), J.img(prop.id + '-b'), J.img(prop.id + '-c')]);
   initBooking(prop);
   J.refreshIcons();
 }

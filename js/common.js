@@ -170,7 +170,8 @@ J.confirm = (title, desc, icon = 'circle-help', okText = 'تایید') =>
   });
 
 J.initTheme = () => {
-  const stored = localStorage.getItem('jayar_theme');
+  let stored = null;
+  try { stored = localStorage.getItem('jayar_theme'); } catch {}
   const dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
   if (dark) document.documentElement.setAttribute('data-theme', 'dark');
   const btn = J.$('.theme-toggle');
@@ -185,12 +186,18 @@ J.initTheme = () => {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     if (isDark) document.documentElement.removeAttribute('data-theme');
     else document.documentElement.setAttribute('data-theme', 'dark');
-    localStorage.setItem('jayar_theme', isDark ? 'light' : 'dark');
+    try { localStorage.setItem('jayar_theme', isDark ? 'light' : 'dark'); } catch {}
     sync();
   };
 };
 
-/* اجرا پس از آماده‌شدن DOM و لایهٔ داده (J.db.ready) */
+/* اجرای فوری پس از DOM — بدون انتظار برای داده (مناسب کارهای صرفاً UI مثل تم، منو و آیکون‌ها) */
+J.domReady = fn => {
+  if (document.readyState !== 'loading') fn();
+  else document.addEventListener('DOMContentLoaded', fn);
+};
+
+/* اجرا پس از آماده‌شدن DOM و لایهٔ داده (J.db.ready) — برای رندر محتوا */
 J.onReady = fn => {
   const run = () => Promise.resolve(J.db && J.db.ready).then(() => fn());
   if (document.readyState !== 'loading') run();
@@ -217,10 +224,10 @@ document.addEventListener('click', e => {
   if (el && J.checkConnection) J.checkConnection();
 });
 
-J.onReady(J.initTheme);
+J.domReady(J.initTheme);
 
 /* ---------- منوی موبایل (همبرگری) ---------- */
-J.onReady(() => {
+J.domReady(() => {
   const burger = J.$('.nav-burger');
   const links = J.$('.nav-links');
   const nav = J.$('.nav');
@@ -262,10 +269,10 @@ J.onReady(() => {
 });
 
 /* رندر آیکون‌های استاتیک پس از آماده‌شدن DOM (و هر رندر داینامیک که refreshIcons می‌خواند) */
-J.onReady(() => J.refreshIcons());
+J.domReady(() => J.refreshIcons());
 
 /* ---------- هایلایت لینک صفحهٔ فعلی در نوبار (دسکتاپ و منوی موبایل) ---------- */
-J.onReady(() => {
+J.domReady(() => {
   const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
   J.$$('.nav-links a').forEach(a => {
     const href = String(a.getAttribute('href') || '').toLowerCase();
