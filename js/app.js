@@ -95,6 +95,11 @@ function renderPopular() {
 
 /* ---------- فرم جستجو ---------- */
 function bindSearch() {
+  /* محدودیت تاریخ: خروج حداقل یک روز بعد از ورود (همان منطق صفحهٔ رزرو) */
+  const clamp = () => J.clampDates(el.in, el.out);
+  el.in.onchange = clamp;
+  el.out.onchange = clamp;
+
   el.form.onsubmit = e => {
     e.preventDefault();
     state.city = el.city.value;
@@ -137,6 +142,8 @@ J.onReady(() => {
   el.in.value = state.in;
   el.out.value = state.out;
   el.guests.value = state.guests || 2;
+  el.in.min = J.todayISO(); /* ورود از امروز به بعد */
+  J.clampDates(el.in, el.out); /* مینِ اولیهٔ خروج */
   renderTypes();
   renderCitySelect();
   renderPopular();

@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>پنل میزبان | جایار</title>
 <meta name="description" content="میزبان شو؛ اقامتگاهت را ثبت کن و از هر رزرو درآمد داشته باش">
+<!-- SEO: در استقرار واقعی، jayar.example را با دامنهٔ اصلی جایگزین کنید -->
+<link rel="canonical" href="https://jayar.example/host.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="پنل میزبان | جایار">
+<meta property="og:description" content="میزبان شو؛ اقامتگاهت را ثبت کن و از هر رزرو درآمد داشته باش">
+<meta property="og:url" content="https://jayar.example/host.html">
+<meta property="og:locale" content="fa_IR">
+<meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/tailwind.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>">
@@ -52,11 +60,13 @@
       <button class="tab-btn active" data-tab="register">ثبت اقامتگاه جدید</button>
       <button class="tab-btn" data-tab="list">اقامتگاه‌های من</button>
       <button class="tab-btn" data-tab="bookings">رزروهای دریافتی</button>
+      <button class="tab-btn" data-tab="stats">📊 آمار</button>
     </div>
 
     <div id="tabRegister"></div>
     <div id="tabList" class="hidden"></div>
     <div id="tabBookings" class="hidden"></div>
+    <div id="tabStats" class="hidden"></div>
   </div>
 </main>
 

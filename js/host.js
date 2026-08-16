@@ -17,6 +17,7 @@ const el = {
   register: $('#tabRegister'),
   list: $('#tabList'),
   bookings: $('#tabBookings'),
+  stats: $('#tabStats'),
   hostWrap: $('#hostFormWrap'),
 };
 
@@ -27,8 +28,10 @@ $$('.tab-btn').forEach(btn => {
     el.register.classList.toggle('hidden', tab !== 'register');
     el.list.classList.toggle('hidden', tab !== 'list');
     el.bookings.classList.toggle('hidden', tab !== 'bookings');
+    el.stats.classList.toggle('hidden', tab !== 'stats');
     if (tab === 'list') renderMyProps();
     if (tab === 'bookings') renderBookings();
+    if (tab === 'stats') renderStats();
   };
 });
 
@@ -232,14 +235,22 @@ function renderMyProps() {
         ].join('')}</div>
       </div>
       <div class="host-item-actions">
+        <a class="btn btn-soft btn-sm" href="detail.html?id=${p.id}" target="_blank" rel="noopener">👁 نمایش عمومی</a>
         <button class="btn btn-ghost btn-sm" data-edit="${p.id}">✏️ ویرایش</button>
         <button class="btn btn-danger-soft btn-sm" data-del="${p.id}">حذف</button>
       </div>
     </div>`).join('')}</div>`;
 
   $$('[data-del]').forEach(b => b.onclick = async () => {
+    const propId = b.dataset.del;
+    const pendingCount = J.db.bookings
+      .filter(x => String(x.propertyId) === String(propId) && x.status === 'pending').length;
+    if (pendingCount > 0) {
+      J.toast(`این اقامتگاه ${J.fmtNum(pendingCount)} رزرو در انتظار تأیید دارد؛ ابتدا آن‌ها را تأیید یا رد کنید`, 'error');
+      return;
+    }
     if (await J.confirm('حذف اقامتگاه', 'این اقامتگاه برای همیشه حذف میشود.', '🗑️', 'حذف')) {
-      J.db.props = J.db.props.filter(x => x.id !== b.dataset.del);
+      J.db.props = J.db.props.filter(x => x.id !== propId);
       J.toast('اقامتگاه حذف شد', 'error');
       renderMyProps();
     }
@@ -299,6 +310,49 @@ function renderBookings() {
     J.toast('رزرو رد شد');
     renderBookings();
   });
+}
+
+/* ---------- آمار میزبان ---------- */
+function renderStats() {
+  if (!HOST) {
+    el.stats.innerHTML = `<div class="empty-state"><div class="emoji">🔐</div><h3>ابتدا وارد شوید</h3><p class="muted">برای مشاهدهٔ آمار، ابتدا از تب «ثبت اقامتگاه جدید» وارد شوید.</p></div>`;
+    return;
+  }
+  const mine = J.db.props.filter(p => p.ownerId === HOST.id);
+  if (!mine.length) {
+    el.stats.innerHTML = `<div class="empty-state"><div class="emoji">📊</div><h3>هنوز اقامتگاهی ثبت نکرده‌اید</h3><p class="muted">با ثبت اولین اقامتگاه، آمار اینجا نمایش داده می‌شود.</p></div>`;
+    return;
+  }
+
+  const ids = new Set(mine.map(p => String(p.id)));
+  const list = J.db.bookings.filter(b => ids.has(String(b.propertyId)));
+  const pending = list.filter(b => b.status === 'pending');
+  const confirmed = list.filter(b => b.status === 'ok');
+  const revenue = confirmed.reduce((s, b) => s + (b.total || 0), 0);
+  const top = [...mine]
+    .sort((a, b) => ((b.views || 0) - (a.views || 0)) || (b.rating - a.rating))
+    .slice(0, 3);
+
+  el.stats.innerHTML = `
+    <div class="card animate-rise">
+      <h3>📈 عملکرد اقامتگاه‌های شما</h3>
+      <div class="stat-grid" style="margin-top:14px">
+        <div class="stat-card"><div class="emoji" style="font-size:26px">📋</div><div class="stat-num">${J.fmtNum(list.length)}</div><div class="stat-lbl">کل رزروها</div></div>
+        <div class="stat-card"><div class="emoji" style="font-size:26px">⏳</div><div class="stat-num">${J.fmtNum(pending.length)}</div><div class="stat-lbl">در انتظار تأیید</div></div>
+        <div class="stat-card"><div class="emoji" style="font-size:26px">✅</div><div class="stat-num">${J.fmtNum(confirmed.length)}</div><div class="stat-lbl">رزرو تأییدشده</div></div>
+        <div class="stat-card"><div class="emoji" style="font-size:26px">💰</div><div class="stat-num">${J.fmtPrice(revenue)}</div><div class="stat-lbl">درآمد کل (تأییدشده)</div></div>
+      </div>
+    </div>
+
+    <div class="card animate-rise" style="margin-top:18px">
+      <h3>👁 پربازدیدترین اقامتگاه‌ها</h3>
+      ${top.map((p, i) => `
+        <div class="rank-row" style="margin-top:${i === 0 ? '14px' : '8px'}">
+          <span class="rank-num">${i + 1}</span>
+          <span class="rank-title">${J.escape(p.title)}</span>
+          <span class="rank-views">👁 ${J.fmtNum(p.views || 0)} بازدید · ${J.fmtNum(list.filter(b => String(b.propertyId) === String(p.id)).length)} رزرو</span>
+        </div>`).join('')}
+    </div>`;
 }
 
 /* ---------- تعویض تب / کمکی ---------- */

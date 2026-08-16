@@ -91,8 +91,32 @@ J.renderStats = (sel = '#stats') => {
     </div>`).join('');
 };
 
+/* شمارش بازدید اقامتگاه — برای آمار «پربازدیدترین‌ها» در پنل میزبان */
+J.recordView = id => {
+  const props = J.db.props;
+  const hostProp = props.find(x => String(x.id) === String(id));
+  if (hostProp) {
+    hostProp.views = (hostProp.views || 0) + 1;
+    J.db.props = [...props]; /* آفلاین: ذخیره؛ آنلاین: diff → PATCH */
+    return;
+  }
+  const base = J.BASE_PROPERTIES.find(x => String(x.id) === String(id));
+  if (base) base.views = (base.views || 0) + 1; /* فقط در حافظهٔ این نشست */
+};
+
 J.toISO = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 J.todayISO = () => J.toISO(new Date());
+
+/* محدودیت تاریخ: ورود از امروز به بعد، خروج حداقل یک روز بعد از ورود (برای فیلدهای type=date) */
+J.clampDates = (inEl, outEl) => {
+  const today = J.todayISO();
+  if (inEl.value && inEl.value < today) inEl.value = today;
+  const minOut = inEl.value
+    ? J.toISO(new Date(new Date(inEl.value).getTime() + 86400000))
+    : today;
+  outEl.min = minOut;
+  if (outEl.value && outEl.value < minOut) outEl.value = minOut;
+};
 
 J.toast = (msg, type = 'success') => {
   let wrap = J.$('.toast-wrap');
@@ -183,17 +207,49 @@ J.onReady(J.initTheme);
 J.onReady(() => {
   const burger = J.$('.nav-burger');
   const links = J.$('.nav-links');
-  if (!burger || !links) return;
+  const nav = J.$('.nav');
+  if (!burger || !links || !nav) return;
+
+  /* overlay نیمه‌شفاف پشت منو — با کلیک بسته می‌شود */
+  const overlay = document.createElement('div');
+  overlay.className = 'nav-overlay';
+  nav.appendChild(overlay);
+
   const set = isOpen => {
     links.classList.toggle('open', isOpen);
+    if (isOpen) links.classList.remove('closing');
     burger.classList.toggle('open', isOpen);
     burger.setAttribute('aria-expanded', String(isOpen));
     burger.setAttribute('aria-label', isOpen ? 'بستن منو' : 'باز کردن منو');
+    overlay.classList.toggle('show', isOpen);
+    /* با باز بودن منو، اسکرول صفحه قفل می‌شود */
+    document.body.classList.toggle('no-scroll', isOpen);
   };
-  burger.onclick = () => set(!links.classList.contains('open'));
-  links.addEventListener('click', e => { if (e.target.closest && e.target.closest('a')) set(false); });
+
+  /* بستن نرم: انیمیشن محو/افتادن قبل از مخفی‌شدن کامل */
+  let closeT = null;
+  const closeMenu = () => {
+    if (!links.classList.contains('open')) return;
+    links.classList.add('closing');
+    set(false);
+    clearTimeout(closeT);
+    closeT = setTimeout(() => links.classList.remove('closing'), 220);
+  };
+
+  burger.onclick = () => { if (links.classList.contains('open')) closeMenu(); else set(true); };
+  overlay.onclick = closeMenu;
+  links.addEventListener('click', e => { if (e.target.closest && e.target.closest('a')) closeMenu(); });
   document.addEventListener('click', e => {
-    if (!(e.target.closest && e.target.closest('.nav-inner'))) set(false);
+    if (!(e.target.closest && e.target.closest('.nav-inner'))) closeMenu();
   });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+});
+
+/* ---------- هایلایت لینک صفحهٔ فعلی در نوبار (دسکتاپ و منوی موبایل) ---------- */
+J.onReady(() => {
+  const page = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+  J.$$('.nav-links a').forEach(a => {
+    const href = String(a.getAttribute('href') || '').toLowerCase();
+    if (href.split('?')[0] === page) a.classList.add('active');
+  });
 });

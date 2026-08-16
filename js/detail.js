@@ -195,15 +195,9 @@ function initBooking(prop) {
     return total;
   }
 
-  /* خروج باید حداقل یک روز بعد از ورود باشد؛ ورود هم از امروز به بعد */
+  /* خروج باید حداقل یک روز بعد از ورود باشد؛ ورود هم از امروز به بعد (منطق مشترک در common.js) */
   function clampDates() {
-    const today = J.todayISO();
-    if (chIn.value && chIn.value < today) chIn.value = today;
-    const minOut = chIn.value
-      ? J.toISO(new Date(new Date(chIn.value).getTime() + 86400000))
-      : today;
-    chOut.min = minOut;
-    if (chOut.value && chOut.value < minOut) chOut.value = minOut;
+    J.clampDates(chIn, chOut);
     recalc();
   }
 
@@ -286,7 +280,22 @@ function boot() {
   }
 
   document.title = `${prop.title} | جایار`;
-  $('#bcTitle').textContent = prop.title;
+  /* breadcrumb با Microdata (schema.org BreadcrumbList) — برای نمایش خرده‌پرت در گوگل */
+  const bcList = $('#bcList');
+  if (bcList) {
+    const cityLi = prop.city
+      ? `<li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+           <a itemprop="item" href="index.html?city=${encodeURIComponent(prop.city)}"><span itemprop="name">${J.escape(prop.city)}</span></a>
+           <meta itemprop="position" content="2">
+         </li>`
+      : '';
+    bcList.innerHTML += cityLi + `
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem" class="crumb-current">
+        <span itemprop="name">${J.escape(prop.title)}</span>
+        <meta itemprop="position" content="3">
+      </li>`;
+  }
+  J.recordView(prop.id); /* شمارش بازدید برای آمار پربازدیدترین‌ها */
   render(prop);
   initBooking(prop);
 }

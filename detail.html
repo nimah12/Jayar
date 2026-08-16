@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>جزئیات اقامتگاه | جایار</title>
 <meta name="description" content="جزئیات، امکانات و رزرو آنلاین اقامتگاه">
+<!-- SEO: در استقرار واقعی، jayar.example را با دامنهٔ اصلی جایگزین کنید -->
+<link rel="canonical" href="https://jayar.example/detail.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="جزئیات اقامتگاه | جایار">
+<meta property="og:description" content="جزئیات، امکانات و رزرو آنلاین اقامتگاه">
+<meta property="og:url" content="https://jayar.example/detail.html">
+<meta property="og:locale" content="fa_IR">
+<meta name="twitter:card" content="summary">
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/tailwind.css">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>">
@@ -28,7 +36,14 @@
 </nav>
 
 <main class="container">
-  <div class="breadcrumb"><a href="index.html">جایار</a> <span class="muted">›</span> <b id="bcTitle">اقامتگاه</b></div>
+  <div class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+    <ol id="bcList">
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">جایار</span></a>
+        <meta itemprop="position" content="1">
+      </li>
+    </ol>
+  </div>
 
   <div id="wrap"></div>
 </main>

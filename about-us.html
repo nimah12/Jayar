@@ -40,7 +40,18 @@
 
 <main class="section">
   <div class="container" style="max-width:820px">
-    <div class="breadcrumb"><a href="index.html">جایار</a> <span class="muted">›</span> <b>درباره ما</b></div>
+    <div class="breadcrumb" itemscope itemtype="https://schema.org/BreadcrumbList">
+      <ol>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <a itemprop="item" href="index.html"><span itemprop="name">جایار</span></a>
+          <meta itemprop="position" content="1">
+        </li>
+        <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span itemprop="name">درباره ما</span>
+          <meta itemprop="position" content="2">
+        </li>
+      </ol>
+    </div>
     <div class="card animate-rise" style="text-align:center">
       <div style="font-size:44px;margin-bottom:8px">🏡</div>
       <h1 class="detail-title">دربارهٔ جایار</h1>
@@ -125,6 +136,19 @@
         <div class="host-step"><span class="n">۱</span><div><b>جستجو کنید</b><p>شهر، تاریخ و تعداد مهمان را انتخاب کنید و اقامتگاه دلخواهتان را پیدا کنید.</p></div></div>
         <div class="host-step"><span class="n">۲</span><div><b>رزرو کنید</b><p>جزئیات و نظرات را ببینید و با چند کلیک رزرو خود را ثبت کنید.</p></div></div>
         <div class="host-step"><span class="n">۳</span><div><b>اقامت کنید</b><p>پس از تأیید میزبان، راهی سفر شوید و از اقامت لذت ببرید.</p></div></div>
+      </div>
+    </div>
+
+    <div class="card animate-rise" style="margin-top:18px;text-align:center">
+      <h3>📮 تماس با ما</h3>
+      <p class="muted" style="margin-top:6px">سوالی دربارهٔ رزرو، میزبان شدن یا همکاری دارید؟ تیم پشتیبانی جایار همه‌روزه پاسخگوی شماست.</p>
+      <div class="pill-row" style="justify-content:center;margin-top:14px">
+        <span class="pill">📧 bbmesiaaw@gmail.com</span>
+        <span class="pill">🕘 همه‌روزه ۹ تا ۲۱</span>
+      </div>
+      <div class="modal-actions" style="justify-content:center">
+        <a href="about.html" class="btn btn-primary">رفتن به صفحهٔ تماس با ما</a>
+        <a href="mailto:bbmesiaaw@gmail.com" class="btn btn-soft">ارسال ایمیل مستقیم</a>
       </div>
     </div>
 
